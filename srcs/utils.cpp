@@ -1,24 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/10 12:12:55 by vico              #+#    #+#             */
-/*   Updated: 2022/06/16 11:08:31 by vico             ###   ########.fr       */
+/*   Created: 2022/06/13 02:56:08 by vico              #+#    #+#             */
+/*   Updated: 2022/06/13 11:31:54 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utils.hpp"
-#include "Server.hpp"
 
-int		main(int ac, char **av)
+std::string	get_ip()
 {
-	Server	*s = new Server;
+	char			hostname[128];
+	std::string		ip;
 
-	s->init(ac, av);
-	s->run();
-	delete s;
-	return 0;
+	gethostname(hostname, 127);
+	struct hostent*	host(gethostbyname(hostname));
+	if (!host || host->h_addrtype != AF_INET || !host->h_addr_list[0])
+		return ("");
+	ip = inet_ntoa(*(reinterpret_cast<struct in_addr *>(host->h_addr_list)));
+	return (ip);
+}
+
+int			error_msg(std::string msg)
+{
+	std::cout << "ERROR: " << msg << std::endl;
+	return -1;
 }

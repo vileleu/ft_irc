@@ -1,24 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/10 12:12:55 by vico              #+#    #+#             */
-/*   Updated: 2022/06/16 11:08:31 by vico             ###   ########.fr       */
+/*   Created: 2022/06/13 11:49:20 by vico              #+#    #+#             */
+/*   Updated: 2022/06/15 17:07:39 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.hpp"
-#include "Server.hpp"
+#include "Client.hpp"
 
-int		main(int ac, char **av)
+Client::Client() : _name(""), _socket(0), _infos_client_size(sizeof(_infos_client))
 {
-	Server	*s = new Server;
+}
 
-	s->init(ac, av);
-	s->run();
-	delete s;
-	return 0;
+Client::~Client()
+{
 }

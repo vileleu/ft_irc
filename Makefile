@@ -5,8 +5,8 @@
 #                                                     +:+ +:+         +:+      #
 #    By: vico <vico@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2022/03/10 12:08:54 by vico              #+#    #+#              #
-#    Updated: 2022/06/05 19:00:08 by vico             ###   ########.fr        #
+#    Created: 2022/06/15 18:15:11 by vico              #+#    #+#              #
+#    Updated: 2022/06/16 00:44:45 by vico             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,29 +19,27 @@ ORANGE		= \033[0;33m
 MAGENTA		= \033[0;35m
 RESET		= \033[0m
 
-SRCS		= $(wildcard srcs/main.cpp)
+SRCSDIR		= srcs
+BINDIR		= bin
+INCSDIR		= includes
 
-OBJS 		= $(SRCS:%.cpp=%.o)
+SRCS		= $(wildcard srcs/main.cpp srcs/Server.cpp srcs/utils.cpp srcs/Client.cpp)			
+OBJS 		= $(patsubst $(SRCSDIR)/%.cpp,$(BINDIR)/%.o,$(SRCS))
+DEPENDS 	= $(OBJS:%.o=%.d)
+INCS		= -I $(INCSDIR)
 
-DEPENDS 	= $(SRCS:%.cpp=%.d)
-
-INCLUDES	= -I./includes
-
-NAME		= ft_irc
-
-CXX			= c++
-
+NAME		= ircserv
+CXX			= clang++
 CXXFLAGS	= -Wall -Wextra -Werror -std=c++98 -g3 -fsanitize=address
-
 RM			= rm -rf
 
-%.o: %.cpp
+$(BINDIR)/%.o: $(SRCSDIR)/%.cpp
 			@printf "$(BLUE)$< -> $(ORANGE)$@$(RESET)\n"
-			@$(CXX) $(CXXFLAGS) -MMD -MP $(INCLUDES) -c $< -o $@
+			@$(CXX) $(CXXFLAGS) -MMD -MP $(INCS) -c $< -o $@
 
 $(NAME):	$(OBJS)
-			@printf "\n$(BLUE)Compiling files..."
-			@$(CXX) $(CXXFLAGS) $(OBJS) $(INCLUDES) -o $(NAME)
+			@printf "\n$(BLUE)Compiling files...$(RESET)"
+			@$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
 			@printf "$(GREEN)[$(NAME) done][✔]$(RESET)\n"
 
 all:		 $(NAME)
