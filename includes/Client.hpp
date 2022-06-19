@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 11:49:32 by vico              #+#    #+#             */
-/*   Updated: 2022/06/15 17:04:18 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/19 21:16:31 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,16 +19,19 @@ class Client
 {
 	private:
 
+	int					_socket;
+	struct sockaddr_in	_infos_client;
+	socklen_t			_infos_client_size;
+
 	public:
 
 	Client();
 	~Client();
 
-	std::string			_name;
-	int					_socket;
-
-	struct sockaddr_in	_infos_client;
-	socklen_t			_infos_client_size;
+	int					getSocket() const;
+	void				setSocket(int socket);
+	struct sockaddr_in	&getInfos();
+	socklen_t			&getInfosSize();
 };
 
 #endif

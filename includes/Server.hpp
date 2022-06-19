@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 00:08:36 by vico              #+#    #+#             */
-/*   Updated: 2022/06/15 16:45:36 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/19 21:22:39 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ class Server
 	int						_max_client;
 	fd_set					_read_fds;
 
-	int						_ret_select;
+	int						_select;
 
 	public:
 
