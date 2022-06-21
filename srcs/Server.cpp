@@ -6,13 +6,13 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 03:07:45 by vico              #+#    #+#             */
-/*   Updated: 2022/06/19 21:37:07 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/20 15:40:38 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-Server::Server() : _port(0), _socket(0), _password(""), _loop(true), _nb_client(0), _max_client(FD_SETSIZE), _select(0)
+Server::Server() : _port(0), _socket(0), _password(""), _loop(true), _max_client(FD_SETSIZE), _select(0)
 {
 }
 
@@ -26,6 +26,76 @@ Server::~Server()
 	close(_socket);
 }
 
+void	Server::addClient()
+{
+	_list_client.push_back(new Client);
+	_list_client[_list_client.size() - 1]->setSocket(accept(_socket, reinterpret_cast<struct sockaddr *>(&(_list_client[_list_client.size() - 1]->getInfos())), &(_list_client[_list_client.size() - 1]->getInfosSize())));
+	if (_list_client[_list_client.size() - 1]->getSocket() == -1)
+	{
+		errorServer("accept");
+		return ;	
+	}
+	FD_SET(_list_client[_list_client.size() - 1]->getSocket(), &_read_fds);
+	std::cout << "Client connected: " << _list_client[_list_client.size() - 1]->getSocket() << " from " << _list_client[_list_client.size() - 1]->getIp() << ":" << _list_client[_list_client.size() - 1]->getPort() << "\n" << std::endl;
+}
+
+void	Server::deleteClient(std::vector<Client *>::iterator it)
+{
+	std::cout << "Client disconnected: " << (*it)->getSocket() << "\n" << std::endl;
+	FD_CLR((*it)->getSocket(), &_read_fds);
+	Client	*c = *it;
+	_list_client.erase(it);
+	delete c;
+}
+
+void	Server::receiveText(const int i)
+{
+	char	buf[4096];
+
+	memset(buf, 0, 4096);
+	int bytes = recv(i, buf, 4096, 0);
+
+	std::string	text(buf);
+	std::string	command(text.substr(0, text.find(' ')));
+
+	if (bytes == 0)
+	{
+		for (std::vector<Client *>::iterator it(_list_client.begin()); it != _list_client.end(); it++)
+		{
+			if (i == (*it)->getSocket())
+			{
+				deleteClient(it);
+				break ;
+			}
+		}
+	}
+	else
+	{
+		std::cout << "new message from " << i << ": " << text << std::endl;
+	}
+}
+
+void	Server::checkFds()
+{
+	fd_set	copy = _read_fds;
+
+	_select = select(_max_client, &copy, NULL, NULL, NULL);
+	for (int i(0); i < (_max_client) && (_select); i++)
+	{
+		if (FD_ISSET(i, &copy))
+		{
+			if (i == _socket)
+			{
+				addClient();
+			}
+			else
+			{
+				receiveText(i);
+			}
+		}
+	}
+}
+
 void	Server::init(int ac, char **av)
 {
 	if (ac == 3)
@@ -35,19 +105,23 @@ void	Server::init(int ac, char **av)
 		_socket = socket(AF_INET, SOCK_STREAM, 0);
 		if (_socket == -1)
 		{
-			error_msg("Invalid socket");
-			_loop = false;
+			errorServer("socket");
 			return ;
 		}
 		_infos.sin_addr.s_addr = INADDR_ANY;
 		_infos.sin_family = AF_INET;
 		_infos.sin_port = htons(_port);
-
-		bind(_socket, (const sockaddr *)&_infos, sizeof(_infos));
-		std::cout << "Server: " << get_ip() << ":" << _port << " is running" << std::endl;
-		
-		listen(_socket, SOMAXCONN);
-
+		if (bind(_socket, (const sockaddr *)&_infos, sizeof(_infos)) == -1)
+		{
+			errorServer("bind");
+			return ;
+		}
+		if (listen(_socket, SOMAXCONN) == -1)
+		{
+			errorServer("listen");
+			return ;
+		}
+		std::cout << "IRC Server is running on port " << getPort() << std::endl;
 		FD_ZERO(&_read_fds);
 		FD_SET(_socket, &_read_fds);
 	}
@@ -62,65 +136,46 @@ void	Server::run()
 {
 	while (_loop)
 	{
-		check_fds();
+		checkFds();
 	}
 }
 
-void	Server::check_fds()
+/*
+// ↓ UTILS ↓
+*/
+
+int		Server::nbClient() const
 {
-	fd_set	copy = _read_fds;
+	return _list_client.size();
+}
 
-	_select = select(_max_client, &copy, NULL, NULL, NULL);
-	for (int i(0); i < (_max_client) && (_select); i++)
-	{
-		if (FD_ISSET(i, &copy))
-		{
-			if (i == _socket)
-			{
-				_list_client.push_back(new Client);
-				_list_client[_list_client.size() - 1]->setSocket(accept(_socket, reinterpret_cast<struct sockaddr *>(&(_list_client[_list_client.size() - 1]->getInfos())), &(_list_client[_list_client.size() - 1]->getInfosSize())));
-				FD_SET(_list_client[_list_client.size() - 1]->getSocket(), &_read_fds);
-				std::cout << "Client connected: " << _list_client[_list_client.size() - 1]->getSocket() << std::endl;
-				_nb_client++;
-				_select--;
-			}
-			else
-			{
-				char	buf[4096];
+std::string			Server::getIp() const
+{
+	return (inet_ntoa(_infos.sin_addr));
+}
 
-				memset(buf, 0, 4096);
-				int bytesReceived = recv(i, buf, 4096, 0);
-				std::string	text(buf);
-				std::string	command(text.substr(0, text.find(' ')));
-				
-				if (bytesReceived == 0)
-				{
-					for (std::vector<Client *>::iterator it(_list_client.begin()); it != _list_client.end(); it++)
-					{
-						if (i == (*it)->getSocket())
-						{
-							std::cout << "Client disconnected: " << (*it)->getSocket() << std::endl;
-							FD_CLR((*it)->getSocket(), &_read_fds);
-							Client	*c = *it;
-							_list_client.erase(it);
-							delete c;
-							_nb_client--;
-							break ;
-						}
-					}
-				}
-				/*else if (command == "QUIT")
-				{
-					std::cout << "Server disconnected: " << i << " use QUIT command" << std::endl;
-					_loop = false;
-					return ;
-				}*/
-				else
-				{
-					std::cout << "new message from " << i << ": " << text << std::endl;
-				}
-				_select--;
-			}
-		}
-	}
+std::string			Server::getHostIp() const
+{
+	char			hostname[128];
+	std::string		ip;
+
+	gethostname(hostname, 127);
+	struct hostent*	host(gethostbyname(hostname));
+	if (!host || host->h_addrtype != AF_INET || !host->h_addr_list[0])
+		return ("");
+	ip = inet_ntoa(*(reinterpret_cast<struct in_addr *>(host->h_addr_list)));
+	return (ip);
+}
+
+int				Server::getPort() const
+{
+	return _port;
+}
+
+int		Server::errorServer(std::string msg)
+{
+	_loop = false;
+	_select = 0;
+	std::cout << "ERROR: " << msg << std::endl;
+	return -1;
 }

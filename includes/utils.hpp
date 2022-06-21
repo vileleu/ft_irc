@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/09 23:58:56 by vico              #+#    #+#             */
-/*   Updated: 2022/06/16 10:50:43 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/20 02:18:18 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@
 #include <sys/types.h>
 #include <string.h> // memset
 
-std::string	get_ip();
-int			error_msg(std::string msg);
+std::string	getHostIp();
 
 #endif

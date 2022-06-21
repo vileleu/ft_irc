@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 11:49:20 by vico              #+#    #+#             */
-/*   Updated: 2022/06/19 21:16:39 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/20 02:26:16 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,4 +38,14 @@ struct sockaddr_in	&Client::getInfos()
 socklen_t			&Client::getInfosSize()
 {
 	return _infos_client_size;
+}
+
+std::string			Client::getIp() const
+{
+	return (inet_ntoa(_infos_client.sin_addr));
+}
+
+int				Client::getPort() const
+{
+	return ntohs(_infos_client.sin_port);
 }

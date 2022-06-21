@@ -1,0 +1,9 @@
+http://se.inf.ethz.ch/student_projects/fabian_gremper/Report.pdf (pdf)
+
+https://ircgod.com/docs/irc/to_know/                                                      (aide sujet)
+
+https://www.commentcamarche.net/faq/34255-creer-et-administrer-un-canal-irc               (channels)
+
+http://web.archive.org/web/20170929015000/http://www2.irchelp.org:80/irchelp/rfc/rfc.html
+
+https://oramind.com/tutorial-how-to-make-an-irc-server-connection/                        (irc connection)

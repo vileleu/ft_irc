@@ -6,7 +6,7 @@
 #    By: vico <vico@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/15 18:15:11 by vico              #+#    #+#              #
-#    Updated: 2022/06/16 00:44:45 by vico             ###   ########.fr        #
+#    Updated: 2022/06/21 20:00:53 by vico             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,12 +37,15 @@ $(BINDIR)/%.o: $(SRCSDIR)/%.cpp
 			@printf "$(BLUE)$< -> $(ORANGE)$@$(RESET)\n"
 			@$(CXX) $(CXXFLAGS) -MMD -MP $(INCS) -c $< -o $@
 
-$(NAME):	$(OBJS)
+$(NAME):	bin $(OBJS)
 			@printf "\n$(BLUE)Compiling files...$(RESET)"
 			@$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
 			@printf "$(GREEN)[$(NAME) done][✔]$(RESET)\n"
 
 all:		 $(NAME)
+
+bin:		
+			@mkdir $(BINDIR)
 
 clean:
 			@printf "\n$(RED)Erase files '.o'\n"
@@ -53,6 +56,7 @@ clean:
 fclean:		clean
 			@printf "$(RED)Delete executable file\n"
 			@$(RM) $(NAME)
+			@$(RM) $(BINDIR)
 			@printf "$(RESET)\n"
 
 re:			fclean all
