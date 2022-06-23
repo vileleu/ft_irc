@@ -6,13 +6,13 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 11:49:20 by vico              #+#    #+#             */
-/*   Updated: 2022/06/20 02:26:16 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/23 21:04:13 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
 
-Client::Client() : _socket(0), _infos_client_size(sizeof(_infos_client))
+Client::Client() : _socket(0), _infos_client_size(sizeof(_infos_client)), _nickname(""), _username(""), _realname(""), _host("")
 {
 }
 
@@ -38,6 +38,46 @@ struct sockaddr_in	&Client::getInfos()
 socklen_t			&Client::getInfosSize()
 {
 	return _infos_client_size;
+}
+
+std::string			Client::getNickname() const
+{
+	return _nickname;
+}
+
+std::string			Client::getUsername() const
+{
+	return _username;
+}
+
+std::string			Client::getRealname() const
+{
+	return _realname;
+}
+
+std::string			Client::getHost() const
+{
+	return _host;
+}
+
+void				Client::setNickname(const std::string &nickname)
+{
+	_nickname = nickname;
+}
+
+void				Client::setUsername(const std::string &username)
+{
+	_username = username;
+}
+
+void				Client::setRealname(const std::string &realname)
+{
+	_realname = realname;
+}
+
+void				Client::setHost(const std::string &host)
+{
+	_host = host;
 }
 
 std::string			Client::getIp() const

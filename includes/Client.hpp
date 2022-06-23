@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 11:49:32 by vico              #+#    #+#             */
-/*   Updated: 2022/06/20 02:19:38 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/23 21:02:03 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,11 @@ class Client
 	struct sockaddr_in	_infos_client;
 	socklen_t			_infos_client_size;
 
+	std::string			_nickname;
+	std::string			_username;
+	std::string			_realname;
+	std::string			_host;
+
 	public:
 
 	Client();
@@ -32,6 +37,15 @@ class Client
 	void				setSocket(int socket);
 	struct sockaddr_in	&getInfos();
 	socklen_t			&getInfosSize();
+
+	std::string			getNickname() const;
+	std::string			getUsername() const;
+	std::string			getRealname() const;
+	std::string			getHost() const;
+	void				setNickname(const std::string &nickname);
+	void				setUsername(const std::string &username);
+	void				setRealname(const std::string &realname);
+	void				setHost(const std::string &host);
 
 	std::string			getIp() const;
 	int					getPort() const;

@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 03:07:45 by vico              #+#    #+#             */
-/*   Updated: 2022/06/20 15:40:38 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/23 22:49:19 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,16 +36,60 @@ void	Server::addClient()
 		return ;	
 	}
 	FD_SET(_list_client[_list_client.size() - 1]->getSocket(), &_read_fds);
+	_not_register.push_back(_list_client[_list_client.size() - 1]->getSocket());
 	std::cout << "Client connected: " << _list_client[_list_client.size() - 1]->getSocket() << " from " << _list_client[_list_client.size() - 1]->getIp() << ":" << _list_client[_list_client.size() - 1]->getPort() << "\n" << std::endl;
 }
 
 void	Server::deleteClient(std::vector<Client *>::iterator it)
 {
 	std::cout << "Client disconnected: " << (*it)->getSocket() << "\n" << std::endl;
+	for (std::vector<int>::iterator ite(_not_register.begin()); ite != _not_register.end(); ite++)
+	{
+		if ((*it)->getSocket() == *ite)
+		{
+			_not_register.erase(ite);
+			break ;
+		}
+	}
 	FD_CLR((*it)->getSocket(), &_read_fds);
 	Client	*c = *it;
 	_list_client.erase(it);
 	delete c;
+}
+
+int		Server::fillClient(std::vector<Client *>::iterator to_fill, std::string text)
+{
+	if ((*to_fill)->getNickname() == "" && text.find("NICK", 0))
+		(*to_fill)->setNickname(text.substr(text.find("NICK", 0) + 5, (text.find("\n", text.find("NICK", 0) + 5)) - (text.find("NICK", 0) + 5)));
+	if ((*to_fill)->getUsername() == "" && text.find("USER", 0))
+	{
+		(*to_fill)->setUsername(text.substr(text.find("USER", 0) + 5, (text.find(" ", text.find("USER", 0) + 5)) - (text.find("USER", 0) + 5)));
+		(*to_fill)->setRealname(text.substr(text.find_last_of(':') + 1));
+		(*to_fill)->setHost("localhost");
+	}
+	if ((*to_fill)->getNickname() != "" && (*to_fill)->getUsername() != "" && (*to_fill)->getRealname() != "" && (*to_fill)->getHost() != "")
+		return 0;
+	return -1;
+}
+
+void	Server::registration(std::vector<int>::iterator it, std::string text)
+{
+	std::vector<Client *>::iterator	to_fill(_list_client.begin());
+	
+	while (to_fill != _list_client.end())
+	{
+		if ((*to_fill)->getSocket() == *it)
+			break;
+	}
+	if (fillClient(to_fill, text))
+		return ;
+	std::ostringstream	register_cmd;
+
+	register_cmd << ": NICK :" << (*to_fill)->getNickname() << "\n:" << (*to_fill)->getHost() << " 001 " << (*to_fill)->getNickname() << " :Bienvenue chakal\n";
+
+	std::string	to_send(register_cmd.str());
+	send(*it, to_send.c_str(), to_send.size() + 1, 0);
+	_not_register.erase(it);
 }
 
 void	Server::receiveText(const int i)
@@ -56,7 +100,6 @@ void	Server::receiveText(const int i)
 	int bytes = recv(i, buf, 4096, 0);
 
 	std::string	text(buf);
-	std::string	command(text.substr(0, text.find(' ')));
 
 	if (bytes == 0)
 	{
@@ -71,6 +114,14 @@ void	Server::receiveText(const int i)
 	}
 	else
 	{
+		for (std::vector<int>::iterator it(_not_register.begin()); it != _not_register.end(); it++)
+		{
+			if (i == *it)
+			{
+				registration(it, text);
+				return ;
+			}
+		}
 		std::cout << "new message from " << i << ": " << text << std::endl;
 	}
 }
@@ -87,10 +138,12 @@ void	Server::checkFds()
 			if (i == _socket)
 			{
 				addClient();
+				_select--;
 			}
 			else
 			{
 				receiveText(i);
+				_select--;
 			}
 		}
 	}
