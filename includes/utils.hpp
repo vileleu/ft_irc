@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/09 23:58:56 by vico              #+#    #+#             */
-/*   Updated: 2022/06/23 20:42:53 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/24 00:58:58 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,6 @@
 #include <string.h> // memset
 #include <sstream>
 
-std::string	getHostIp();
+std::string	deleteLinefeed(std::string modif);
 
 #endif

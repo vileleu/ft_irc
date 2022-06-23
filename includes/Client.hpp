@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 11:49:32 by vico              #+#    #+#             */
-/*   Updated: 2022/06/23 21:02:03 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/24 00:17:02 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,5 +50,7 @@ class Client
 	std::string			getIp() const;
 	int					getPort() const;
 };
+
+std::ostream			&operator<<(std::ostream &flux, Client const& client);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 03:07:45 by vico              #+#    #+#             */
-/*   Updated: 2022/06/23 22:49:19 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/24 00:59:44 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,10 +85,10 @@ void	Server::registration(std::vector<int>::iterator it, std::string text)
 		return ;
 	std::ostringstream	register_cmd;
 
-	register_cmd << ": NICK :" << (*to_fill)->getNickname() << "\n:" << (*to_fill)->getHost() << " 001 " << (*to_fill)->getNickname() << " :Bienvenue chakal\n";
+	register_cmd << ": NICK :" << (*to_fill)->getNickname() << "\n:" << (*to_fill)->getHost() << " 001 " << (*to_fill)->getNickname() << " :Bienvenue chakal " << *(*to_fill) << "\n";
 
 	std::string	to_send(register_cmd.str());
-	send(*it, to_send.c_str(), to_send.size() + 1, 0);
+	send(*it, to_send.c_str(), to_send.size(), 0);
 	_not_register.erase(it);
 }
 
@@ -99,7 +99,7 @@ void	Server::receiveText(const int i)
 	memset(buf, 0, 4096);
 	int bytes = recv(i, buf, 4096, 0);
 
-	std::string	text(buf);
+	std::string	text(deleteLinefeed(buf));
 
 	if (bytes == 0)
 	{
