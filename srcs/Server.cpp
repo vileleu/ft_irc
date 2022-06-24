@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 03:07:45 by vico              #+#    #+#             */
-/*   Updated: 2022/06/24 00:59:44 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/24 03:52:55 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,13 +59,37 @@ void	Server::deleteClient(std::vector<Client *>::iterator it)
 
 int		Server::fillClient(std::vector<Client *>::iterator to_fill, std::string text)
 {
-	if ((*to_fill)->getNickname() == "" && text.find("NICK", 0))
-		(*to_fill)->setNickname(text.substr(text.find("NICK", 0) + 5, (text.find("\n", text.find("NICK", 0) + 5)) - (text.find("NICK", 0) + 5)));
-	if ((*to_fill)->getUsername() == "" && text.find("USER", 0))
+    std::vector<std::string>	arg;
+    std::istringstream			in(replaceChar(text, '\n', ' '));
+    std::string 				s("");
+
+    while (getline(in, s, ' '))
 	{
-		(*to_fill)->setUsername(text.substr(text.find("USER", 0) + 5, (text.find(" ", text.find("USER", 0) + 5)) - (text.find("USER", 0) + 5)));
-		(*to_fill)->setRealname(text.substr(text.find_last_of(':') + 1));
-		(*to_fill)->setHost("localhost");
+        arg.push_back(s);
+	}
+	if (text.find("NICK", 0))
+	{
+		for (unsigned int i(0); i < arg.size(); i++)
+		{
+			if (arg[i] == "NICK")
+			{
+				(*to_fill)->setNickname(arg[i + 1]);
+				break ;
+			}
+		}
+	}
+	if (text.find("USER", 0))
+	{
+		for (unsigned int i(0); i < arg.size(); i++)
+		{
+			if (arg[i] == "USER")
+			{			
+				(*to_fill)->setUsername(arg[i + 1]);
+				(*to_fill)->setHost(arg[i + 3]);
+				(*to_fill)->setRealname(arg[i + 4].substr(1));
+				break ;
+			}
+		}
 	}
 	if ((*to_fill)->getNickname() != "" && (*to_fill)->getUsername() != "" && (*to_fill)->getRealname() != "" && (*to_fill)->getHost() != "")
 		return 0;
@@ -80,6 +104,7 @@ void	Server::registration(std::vector<int>::iterator it, std::string text)
 	{
 		if ((*to_fill)->getSocket() == *it)
 			break;
+		to_fill++;
 	}
 	if (fillClient(to_fill, text))
 		return ;
@@ -99,7 +124,7 @@ void	Server::receiveText(const int i)
 	memset(buf, 0, 4096);
 	int bytes = recv(i, buf, 4096, 0);
 
-	std::string	text(deleteLinefeed(buf));
+	std::string	text(deleteChar(buf, '\r'));
 
 	if (bytes == 0)
 	{
@@ -194,7 +219,7 @@ void	Server::run()
 }
 
 /*
-// ↓ UTILS ↓
+** ↓ UTILS ↓
 */
 
 int		Server::nbClient() const

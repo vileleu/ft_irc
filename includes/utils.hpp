@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/09 23:58:56 by vico              #+#    #+#             */
-/*   Updated: 2022/06/24 00:58:58 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/24 03:32:19 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 #include <string.h> // memset
 #include <sstream>
 
-std::string	deleteLinefeed(std::string modif);
+std::string		deleteChar(std::string modif, char c);
+std::string		replaceChar(std::string modif, char origin, char replace);
 
 #endif
