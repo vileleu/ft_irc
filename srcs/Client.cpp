@@ -6,13 +6,13 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 11:49:20 by vico              #+#    #+#             */
-/*   Updated: 2022/06/24 00:34:04 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/25 03:59:16 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
 
-Client::Client() : _socket(0), _infos_client_size(sizeof(_infos_client)), _nickname(""), _username(""), _realname(""), _host("")
+Client::Client() : _socket(0), _infos_client_size(sizeof(_infos_client)), _pass(""), _nickname(""), _username(""), _realname(""), _host("")
 {
 }
 
@@ -40,6 +40,11 @@ socklen_t			&Client::getInfosSize()
 	return _infos_client_size;
 }
 
+std::string			Client::getPass() const
+{
+	return _pass;
+}
+
 std::string			Client::getNickname() const
 {
 	return _nickname;
@@ -58,6 +63,11 @@ std::string			Client::getRealname() const
 std::string			Client::getHost() const
 {
 	return _host;
+}
+
+void				Client::setPass(const std::string &pass)
+{
+	_pass = pass;
 }
 
 void				Client::setNickname(const std::string &nickname)
