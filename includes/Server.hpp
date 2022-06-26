@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 00:08:36 by vico              #+#    #+#             */
-/*   Updated: 2022/06/25 04:27:25 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/26 03:43:49 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include "utils.hpp"
 #include "Client.hpp"
+#include "Command.hpp"
 
 class Server
 {
@@ -31,10 +32,9 @@ class Server
 	int							_max_client;
 	fd_set						_read_fds;
 
-	std::pair<int, std::string>	_to_send;
-
 	int							_select;
-	std::vector<int>			_not_register;
+
+	Command						_command;
 
 	void			checkFds();
 	std::string		checkPass(std::vector<Client *>::iterator to_fill);

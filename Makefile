@@ -6,7 +6,7 @@
 #    By: vico <vico@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/15 18:15:11 by vico              #+#    #+#              #
-#    Updated: 2022/06/21 20:03:56 by vico             ###   ########.fr        #
+#    Updated: 2022/06/26 02:40:28 by vico             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,7 @@ SRCSDIR		= srcs
 BINDIR		= bin
 INCSDIR		= includes
 
-SRCS		= $(wildcard srcs/main.cpp srcs/Server.cpp srcs/utils.cpp srcs/Client.cpp)			
+SRCS		= $(wildcard srcs/main.cpp srcs/Server.cpp srcs/utils.cpp srcs/Client.cpp srcs/Command.cpp)			
 OBJS 		= $(patsubst $(SRCSDIR)/%.cpp,$(BINDIR)/%.o,$(SRCS))
 DEPENDS 	= $(OBJS:%.o=%.d)
 INCS		= -I $(INCSDIR)

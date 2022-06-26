@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 11:49:32 by vico              #+#    #+#             */
-/*   Updated: 2022/06/25 03:50:13 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/26 18:49:41 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ class Client
 	std::string			_username;
 	std::string			_realname;
 	std::string			_host;
+	bool				_register;
 
 	public:
 
@@ -44,11 +45,13 @@ class Client
 	std::string			getUsername() const;
 	std::string			getRealname() const;
 	std::string			getHost() const;
+	bool				isRegister() const;
 	void				setPass(const std::string &pass);
 	void				setNickname(const std::string &nickname);
 	void				setUsername(const std::string &username);
 	void				setRealname(const std::string &realname);
 	void				setHost(const std::string &host);
+	void				setRegister(const bool &mode);
 
 	std::string			getIp() const;
 	int					getPort() const;

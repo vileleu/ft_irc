@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 11:49:20 by vico              #+#    #+#             */
-/*   Updated: 2022/06/25 03:59:16 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/26 18:49:38 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 Client::Client() : _socket(0), _infos_client_size(sizeof(_infos_client)), _pass(""), _nickname(""), _username(""), _realname(""), _host("")
 {
+	_register = false;
 }
 
 Client::~Client()
@@ -65,6 +66,11 @@ std::string			Client::getHost() const
 	return _host;
 }
 
+bool				Client::isRegister() const
+{
+	return _register;
+}
+
 void				Client::setPass(const std::string &pass)
 {
 	_pass = pass;
@@ -88,6 +94,11 @@ void				Client::setRealname(const std::string &realname)
 void				Client::setHost(const std::string &host)
 {
 	_host = host;
+}
+
+void				Client::setRegister(const bool &mode)
+{
+	_register = mode;
 }
 
 std::string			Client::getIp() const

@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/09 23:58:56 by vico              #+#    #+#             */
-/*   Updated: 2022/06/24 21:34:50 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/26 02:35:06 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 #include <sys/types.h>
 #include <string.h> // memset
 #include <sstream>
+#include <map>
 #include "define.hpp"
 
 std::string		deleteChar(std::string modif, char c);

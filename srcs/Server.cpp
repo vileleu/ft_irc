@@ -6,13 +6,13 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 03:07:45 by vico              #+#    #+#             */
-/*   Updated: 2022/06/25 04:29:16 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/26 19:59:33 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-Server::Server() : _port(0), _socket(0), _password(""), _host("localhost"), _loop(true), _max_client(FD_SETSIZE), _to_send(std::make_pair(0, "")), _select(0)
+Server::Server() : _port(0), _socket(0), _password(""), _host("localhost"), _loop(true), _max_client(FD_SETSIZE), _select(0)
 {
 }
 
@@ -21,10 +21,15 @@ Server::~Server()
 	for (unsigned int i(0); i < _list_client.size(); i++)
 	{
 		FD_CLR(_list_client[i]->getSocket(), &_read_fds);
+		close(_list_client[i]->getSocket());
 		delete _list_client[i];
 	}
 	close(_socket);
 }
+
+/*
+** ↓ PRIVATE ↓
+*/
 
 void			Server::addClient()
 {
@@ -36,103 +41,17 @@ void			Server::addClient()
 		return ;	
 	}
 	FD_SET(_list_client[_list_client.size() - 1]->getSocket(), &_read_fds);
-	_not_register.push_back(_list_client[_list_client.size() - 1]->getSocket());
 	std::cout << "Client connected: " << _list_client[_list_client.size() - 1]->getSocket() << " from " << _list_client[_list_client.size() - 1]->getIp() << ":" << _list_client[_list_client.size() - 1]->getPort() << "\n" << std::endl;
 }
 
 void			Server::deleteClient(std::vector<Client *>::iterator it)
 {
 	std::cout << "Client disconnected: " << (*it)->getSocket() << "\n" << std::endl;
-	for (std::vector<int>::iterator ite(_not_register.begin()); ite != _not_register.end(); ite++)
-	{
-		if ((*it)->getSocket() == *ite)
-		{
-			_not_register.erase(ite);
-			break ;
-		}
-	}
 	FD_CLR((*it)->getSocket(), &_read_fds);
+	close((*it)->getSocket());
 	Client	*c = *it;
 	_list_client.erase(it);
 	delete c;
-}
-
-int				Server::fillClient(std::vector<Client *>::iterator to_fill, std::string text)
-{
-    std::vector<std::string>	arg;
-    std::istringstream			in(replaceChar(text, '\n', ' '));
-    std::string 				s("");
-
-    while (getline(in, s, ' '))
-	{
-        arg.push_back(s);
-	}
-	if (text.find("PASS"))
-	{
-		for (unsigned int i(0); i < arg.size(); i++)
-		{
-			if (arg[i] == "PASS")
-			{
-				(*to_fill)->setPass(arg[i + 1]);
-				break ;
-			}
-		}
-	}
-	if (text.find("NICK"))
-	{
-		for (unsigned int i(0); i < arg.size(); i++)
-		{
-			if (arg[i] == "NICK")
-			{
-				(*to_fill)->setNickname(arg[i + 1]);
-				break ;
-			}
-		}
-	}
-	if (text.find("USER"))
-	{
-		for (unsigned int i(0); i < arg.size(); i++)
-		{
-			if (arg[i] == "USER")
-			{			
-				(*to_fill)->setUsername(arg[i + 1]);
-				(*to_fill)->setHost((*to_fill)->getNickname() + "!" + (*to_fill)->getUsername() + "@" + arg[i + 3]);
-				(*to_fill)->setRealname(arg[i + 4].substr(1));
-				break ;
-			}
-		}
-	}
-	if ((*to_fill)->getNickname() != "" && (*to_fill)->getUsername() != "" && (*to_fill)->getRealname() != "" && (*to_fill)->getHost() != "")
-		return 0;
-	return -1;
-}
-
-std::string		Server::checkPass(std::vector<Client *>::iterator to_fill)
-{
-	if ((*to_fill)->getPass() == "")
-		return ERR_NEEDMOREPARAMS((*to_fill)->getHost(), (*to_fill)->getNickname(), "PASS");
-	else if ((*to_fill)->getPass() != _password)
-		return ERR_PASSWDMISMATCH((*to_fill)->getHost(), (*to_fill)->getNickname());
-	return ": NICK :" + (*to_fill)->getNickname() + "\n" + RPL_WELCOME((*to_fill)->getHost(), (*to_fill)->getNickname());
-}
-
-void			Server::registration(std::vector<int>::iterator it, std::string text)
-{
-	std::vector<Client *>::iterator	to_fill(_list_client.begin());
-	
-	while (to_fill != _list_client.end())
-	{
-		if ((*to_fill)->getSocket() == *it)
-			break;
-		to_fill++;
-	}
-	if (fillClient(to_fill, text))
-		return ;
-	std::ostringstream	register_cmd;
-
-	register_cmd << checkPass(to_fill);
-	_to_send = std::make_pair(*it, register_cmd.str());
-	_not_register.erase(it);
 }
 
 void			Server::receiveText(const int i)
@@ -142,13 +61,11 @@ void			Server::receiveText(const int i)
 	memset(buf, 0, 4096);
 	int bytes = recv(i, buf, 4096, 0);
 
-	std::string	text(deleteChar(buf, '\r'));
-
 	if (bytes == 0)
 	{
 		for (std::vector<Client *>::iterator it(_list_client.begin()); it != _list_client.end(); it++)
 		{
-			if (i == (*it)->getSocket())
+			if ((*it)->getSocket() == i)
 			{
 				deleteClient(it);
 				break ;
@@ -157,17 +74,24 @@ void			Server::receiveText(const int i)
 	}
 	else
 	{
-		for (std::vector<int>::iterator it(_not_register.begin()); it != _not_register.end(); it++)
+		std::cout << "recv to socket " << i << " this message --> \033[1;35m" << std::string(deleteChar(buf, '\r')) << "\033[0m" << std::endl;
+		for (std::vector<Client *>::iterator it(_list_client.begin()); it != _list_client.end(); it++)
 		{
-			if (i == *it)
+			if ((*it)->getSocket() == i)
 			{
-				registration(it, text);
+				_command.init(deleteChar(buf, '\r'), *it);
 				break ;
 			}
 		}
-		if (_to_send.second != "")
-			send(_to_send.first, _to_send.second.c_str(), _to_send.second.size(), 0);
-		std::cout << "new message from " << i << ": " << text << std::endl;
+		_command.parsing();
+		std::map<int, std::string>	to_send(_command.getTosend());
+
+		for (std::map<int, std::string>::iterator it(to_send.begin()); it != to_send.end(); it++)
+		{
+			std::cout << "send to socket " << (*it).first << " this message --> \033[1;35m" << (*it).second << "\033[0m" << std::endl;
+			send((*it).first, (*it).second.c_str(), (*it).second.size(), 0);
+		}
+		_command.clean();
 	}
 }
 
@@ -180,7 +104,6 @@ void			Server::checkFds()
 	{
 		if (FD_ISSET(i, &copy))
 		{
-			_to_send = std::make_pair(0, "");
 			if (i == _socket)
 			{
 				addClient();
@@ -195,12 +118,17 @@ void			Server::checkFds()
 	}
 }
 
+/*
+** ↓ PUBLIC ↓
+*/
+
 void			Server::init(int ac, char **av)
 {
 	if (ac == 3)
 	{
 		_port = std::atoi(av[1]);
 		_password = av[2];
+		_command.setCommand(_password, _host);
 		_socket = socket(AF_INET, SOCK_STREAM, 0);
 		if (_socket == -1)
 		{
