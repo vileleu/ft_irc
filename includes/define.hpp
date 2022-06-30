@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 19:39:18 by vico              #+#    #+#             */
-/*   Updated: 2022/06/30 03:44:27 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/30 21:00:58 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,7 @@ Generic error message used to report a failed file
 Returned when a nickname parameter expected for a
            command and isn't found.
 */
-#define ERR_ERRONEUSNICKNAME(host, nick, n) ":" + host + " 432 " + nick + " " + n + " :Erroneous nickname\n"
+#define ERR_ERRONEUSNICKNAME(host, nick, n) ":" + host + " 432 " + nick + " :" + n + " :Erroneous nickname\n"
 /*
 Returned after receiving a NICK message which contains
            characters which do not fall in the defined set.  See

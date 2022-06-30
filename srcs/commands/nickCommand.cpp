@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 02:55:25 by vico              #+#    #+#             */
-/*   Updated: 2022/06/30 03:02:10 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/30 20:52:12 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,5 +53,6 @@ int		Command::nickCommand(std::string cmd)
 	}
 	_who->setNickname(arg[1]);
 	_check_send.insert(std::make_pair(_who->getSocket(), ":" + _who->getHost() + " NICK " + _who->getNickname() + "\n"));
+	_who->setHost(_who->getNickname() + "!" + _who->getUsername() + "@" + _host);
 	return 0;
 }
