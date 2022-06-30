@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 11:49:20 by vico              #+#    #+#             */
-/*   Updated: 2022/06/26 18:49:38 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/27 02:16:48 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,10 +109,4 @@ std::string			Client::getIp() const
 int				Client::getPort() const
 {
 	return ntohs(_infos_client.sin_port);
-}
-
-std::ostream		&operator<<(std::ostream &flux, Client const& client)
-{
-    flux << client.getNickname() << "!" << client.getUsername() << "@" << client.getHost();
-    return flux;
 }

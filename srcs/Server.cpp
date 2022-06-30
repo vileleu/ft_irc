@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 03:07:45 by vico              #+#    #+#             */
-/*   Updated: 2022/06/26 19:59:33 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/30 01:04:37 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,10 @@ Server::Server() : _port(0), _socket(0), _password(""), _host("localhost"), _loo
 
 Server::~Server()
 {
-	for (unsigned int i(0); i < _list_client.size(); i++)
+	std::cout << "close Server ..." << std::endl;
+	for (size_t i(0); i < _list_client.size(); i++)
 	{
+		std::cout << "delete client " << _list_client[i]->getSocket() << std::endl;
 		FD_CLR(_list_client[i]->getSocket(), &_read_fds);
 		close(_list_client[i]->getSocket());
 		delete _list_client[i];
@@ -49,9 +51,8 @@ void			Server::deleteClient(std::vector<Client *>::iterator it)
 	std::cout << "Client disconnected: " << (*it)->getSocket() << "\n" << std::endl;
 	FD_CLR((*it)->getSocket(), &_read_fds);
 	close((*it)->getSocket());
-	Client	*c = *it;
+	delete *it;
 	_list_client.erase(it);
-	delete c;
 }
 
 void			Server::receiveText(const int i)
@@ -128,7 +129,7 @@ void			Server::init(int ac, char **av)
 	{
 		_port = std::atoi(av[1]);
 		_password = av[2];
-		_command.setCommand(_password, _host);
+		_command.setCommand(_password, _host, &_list_client);
 		_socket = socket(AF_INET, SOCK_STREAM, 0);
 		if (_socket == -1)
 		{

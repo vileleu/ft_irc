@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 19:39:18 by vico              #+#    #+#             */
-/*   Updated: 2022/06/25 03:56:28 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/30 03:44:27 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,21 +23,21 @@
 **  ↓ ERRORS REPLIES ↓
 */
 
-#define ERR_NOSUCHNICK(host, nick, n) ":" + host + " 401 " + nick + " :" + n + " :No such nick/channel\n"
+#define ERR_NOSUCHNICK(host, nick, n) ":" + host + " 401 " + nick + " " + n + " :No such nick/channel\n"
 /*
  Used to indicate the nickname parameter supplied to a
             command is currently unused.
 */
-#define ERR_NOSUCHSERVER(host, nick, server) ":" + host + " 402 " + nick + " :" + server + " :No such server\n"
+#define ERR_NOSUCHSERVER(host, nick, server) ":" + host + " 402 " + nick + " " + server + " :No such server\n"
 /*
 Used to indicate the server name given currently
            does not exist.
 */
-#define ERR_NOSUCHCHANNEL(host, nick, channel) ":" + host + " 403 " + nick + " :" + channel + " :No such channel\n"
+#define ERR_NOSUCHCHANNEL(host, nick, channel) ":" + host + " 403 " + nick + " " + channel + " :No such channel\n"
 /*
 Used to indicate the given channel name is invalid.
 */
-#define ERR_CANNOTSENDTOCHAN(host, nick, channel) ":" + host + " 404 " + nick + " :" + channel + " :Cannot send to channel\n"
+#define ERR_CANNOTSENDTOCHAN(host, nick, channel) ":" + host + " 404 " + nick + " " + channel + " :Cannot send to channel\n"
 /*
 Sent to a user who is either (a) not on a channel
            which is mode +n or (b) not a chanop (or mode +v) on
@@ -45,13 +45,13 @@ Sent to a user who is either (a) not on a channel
            banned and is trying to send a PRIVMSG message to
            that channel.
 */
-#define ERR_TOOMANYCHANNELS(host, nick, channel) ":" + host + " 405 " + nick + " :" + channel + " :You have joined too many channels\n"
+#define ERR_TOOMANYCHANNELS(host, nick, channel) ":" + host + " 405 " + nick + " " + channel + " :You have joined too many channels\n"
 /*
 Sent to a user when they have joined the maximum
            number of allowed channels and they try to join
            another channel.
 */
-#define ERR_WASNOSUCHNICK(host, nick, n) ":" + host + " 406 " + nick + " :" + n + " :There was no such nickname\n"
+#define ERR_WASNOSUCHNICK(host, nick, n) ":" + host + " 406 " + nick + " " + n + " :There was no such nickname\n"
 /*
 Returned by WHOWAS to indicate there is no history
            information for that nickname.
@@ -77,7 +77,7 @@ Returned to a client which is attempting to JOIN a safe
            channel using the shortname when there are more than one
            such channel.
 */
-#define ERR_NOSUCHSERVICE(host, nick, service) ":" + host + " 408 " + nick + " :" + service + " :No such service\n"
+#define ERR_NOSUCHSERVICE(host, nick, service) ":" + host + " 408 " + nick + " " + service + " :No such service\n"
 /*
 Returned to a client which is attempting to send a SQUERY
            to a service which does not exist.
@@ -102,16 +102,16 @@ PING or PONG message missing the originator parameter.
            are returned when an invalid use of
            "PRIVMSG $<server>" or "PRIVMSG #<host>" is attempted.
 */
-#define ERR_UNKNOWNCOMMAND(host, nick, command) ":" + host + " 421 " + nick + " :" + nick + " :" + command + " :Unknown command\n"
+#define ERR_UNKNOWNCOMMAND(host, nick, command) ":" + host + " 421 " + nick + " " + nick + " :" + command + " :Unknown command\n"
 /*
 Returned to a registered client to indicate that the
            command sent is unknown by the server.
 */
-#define ERR_NOMOTD(host, nick) ":" + host + " 422 " + nick + " :" + nick + " :MOTD File is missing\n"
+#define ERR_NOMOTD(host, nick) ":" + host + " 422 " + nick + " " + nick + " :MOTD File is missing\n"
 /*
 Server's MOTD file could not be opened by the server.
 */
-#define ERR_NOADMININFO(host, nick, server) ":" + host + " 423 " + nick + " :" + server + " :No administrative info available\n"
+#define ERR_NOADMININFO(host, nick, server) ":" + host + " 423 " + nick + " " + server + " :No administrative info available\n"
 /*
 Returned by a server in response to an ADMIN message
            when there is an error in finding the appropriate
@@ -126,18 +126,18 @@ Returned by a server in response to an ADMIN message
 Generic error message used to report a failed file
            operation during the processing of a message.
 */
-#define ERR_NONICKNAMEGIVEN(host, nick, n) ":" + host + " 431 " + nick + " :" + n + " :No nickname given\n"
+#define ERR_NONICKNAMEGIVEN(host, nick, n) ":" + host + " 431 " + nick + " " + n + " :No nickname given\n"
 /*
 Returned when a nickname parameter expected for a
            command and isn't found.
 */
-#define ERR_ERRONEUSNICKNAME(host, nick, n) ":" + host + " 432 " + nick + " :" + n + " :Erroneous nickname\n"
+#define ERR_ERRONEUSNICKNAME(host, nick, n) ":" + host + " 432 " + nick + " " + n + " :Erroneous nickname\n"
 /*
 Returned after receiving a NICK message which contains
            characters which do not fall in the defined set.  See
            section 2.3.1 for details on valid nicknames.
 */
-#define ERR_NICKNAMEINUSE(host, nick, n) ":" + host + " 433 " + nick + " :" + n + " :Nickname is already in use\n"
+#define ERR_NICKNAMEINUSE(host, nick, n) ":" + host + " 433 " + nick + " " + n + " :Nickname is already in use\n"
 /*
 Returned when a NICK message is processed that results
            in an attempt to change to a currently existing
@@ -153,7 +153,7 @@ Returned by a server to a client when it detects a
            nickname collision (registered of a NICK that
            already exists by another server).
 */
-#define ERR_UNAVAILRESOURCE(host, nick, n, channel) ":" + host + " 437 " + nick + " :" + n + "/" + channel + " :Nick/channel is temporarily unavailable\n"
+#define ERR_UNAVAILRESOURCE(host, nick, n, channel) ":" + host + " 437 " + nick + " " + n + "/" + channel + " :Nick/channel is temporarily unavailable\n"
 /*
 Returned by a server to a user trying to join a channel
            currently blocked by the channel delay mechanism.
@@ -164,23 +164,23 @@ Returned by a server to a user trying to change nickname
            when the desired nickname is blocked by the nick delay
            mechanism.
 */
-#define ERR_USERNOTINCHANNEL(host, nick, n, channel) ":" + host + " 441 " + nick + " :" + n + " " + channel + " :They aren't on that channel\n"
+#define ERR_USERNOTINCHANNEL(host, nick, n, channel) ":" + host + " 441 " + nick + " " + n + " " + channel + " :They aren't on that channel\n"
 /*
 Returned by the server to indicate that the target
            user of the command is not on the given channel.
 */
-#define ERR_NOTONCHANNEL(host, nick, channel) ":" + host + " 442 " + nick + " :" + channel + " :You're not on that channel\n"
+#define ERR_NOTONCHANNEL(host, nick, channel) ":" + host + " 442 " + nick + " " + channel + " :You're not on that channel\n"
 /*
 Returned by the server whenever a client tries to
            perform a channel affecting command for which the
            client isn't a member.
 */
-#define ERR_USERONCHANNEL(host, nick, user, channel) ":" + host + " 443 " + nick + " :" + user + " " + channel + " :is already on channel\n"
+#define ERR_USERONCHANNEL(host, nick, user, channel) ":" + host + " 443 " + nick + " " + user + " " + channel + " :is already on channel\n"
 /*
 Returned when a client tries to invite a user to a
            channel they are already on.
 */
-#define ERR_NOLOGIN(host, nick, user) ":" + host + " 444 " + nick + " :" + user + " :User not logged in\n"
+#define ERR_NOLOGIN(host, nick, user) ":" + host + " 444 " + nick + " " + user + " :User not logged in\n"
 /*
 Returned by the summon after a SUMMON command for a
            user was unable to be performed since they were not
@@ -202,7 +202,7 @@ Returned by the server to indicate that the client
            MUST be registered before the server will allow it
            to be parsed in detail.
 */
-#define ERR_NEEDMOREPARAMS(host, nick, command) ":" + host + " 461 " + nick + " :" + command + " :Not enough parameters\n"
+#define ERR_NEEDMOREPARAMS(host, nick, command) ":" + host + " 461 " + nick + " " + command + " :Not enough parameters\n"
 /*
 Returned by the server by numerous commands to
            indicate to the client that it didn't supply enough
@@ -238,23 +238,23 @@ Returned after an attempt to connect and register
 Sent by a server to a user to inform that access to the
            server will soon be denied.
 */
-#define ERR_KEYSET(host, nick, channel) ":" + host + " 467 " + nick + " :" + channel + " :Channel key already set\n"
+#define ERR_KEYSET(host, nick, channel) ":" + host + " 467 " + nick + " " + channel + " :Channel key already set\n"
 
-#define ERR_CHANNELISFULL(host, nick, channel) ":" + host + " 471 " + nick + " :" + channel + " :Cannot join channel (+l)\n"
+#define ERR_CHANNELISFULL(host, nick, channel) ":" + host + " 471 " + nick + " " + channel + " :Cannot join channel (+l)\n"
 
-#define ERR_UNKNOWNMODE(host, nick, channel, char) ":" + host + " 472 " + nick + " :" + char + " :is unknown mode char to me for " + channel + "\n"
+#define ERR_UNKNOWNMODE(host, nick, channel, char) ":" + host + " 472 " + nick + " " + char + " :is unknown mode char to me for " + channel + "\n"
 
-#define ERR_INVITEONLYCHAN(host, nick, channel) ":" + host + " 473 " + nick + " :" + channel + " :Cannot join channel (+i)\n"
+#define ERR_INVITEONLYCHAN(host, nick, channel) ":" + host + " 473 " + nick + " " + channel + " :Cannot join channel (+i)\n"
 
-#define ERR_BANNEDFROMCHAN(host, nick, channel) ":" + host + " 474 " + nick + " :" + channel + " :Cannot join channel (+b)\n"
+#define ERR_BANNEDFROMCHAN(host, nick, channel) ":" + host + " 474 " + nick + " " + channel + " :Cannot join channel (+b)\n"
 
-#define ERR_BADCHANNELKEY(host, nick, channel) ":" + host + " 475 " + nick + " :" + channel + " :Cannot join channel (+k)\n"
+#define ERR_BADCHANNELKEY(host, nick, channel) ":" + host + " 475 " + nick + " " + channel + " :Cannot join channel (+k)\n"
 
-#define ERR_BADCHANMASK(host, nick, channel) ":" + host + " 476 " + nick + " :" + channel + " :Bad Channel Mask\n"
+#define ERR_BADCHANMASK(host, nick, channel) ":" + host + " 476 " + nick + " " + channel + " :Bad Channel Mask\n"
 
-#define ERR_NOCHANMODES(host, nick, channel) ":" + host + " 477 " + nick + " :" + channel + " :Channel doesn't support modes\n"
+#define ERR_NOCHANMODES(host, nick, channel) ":" + host + " 477 " + nick + " " + channel + " :Channel doesn't support modes\n"
 
-#define ERR_BANLISTFULL(host, nick, channel, char) ":" + host + " 478 " + nick + " :" + channel + " " + char + " :Channel list is full\n"
+#define ERR_BANLISTFULL(host, nick, channel, char) ":" + host + " 478 " + nick + " " + channel + " " + char + " :Channel list is full\n"
 
 #define ERR_NOPRIVILEGES(host, nick, channel) ":" + host + " 481 " + nick + " :Permission Denied- You're not an IRC operator\n"
 /*
@@ -262,7 +262,7 @@ Any command requiring operator privileges to operate
            MUST return this error to indicate the attempt was
            unsuccessful.
 */
-#define ERR_CHANOPRIVSNEEDED(host, nick, channel) ":" + host + " 482 " + nick + " :" + channel + " :You're not channel operator\n"
+#define ERR_CHANOPRIVSNEEDED(host, nick, channel) ":" + host + " 482 " + nick + " " + channel + " :You're not channel operator\n"
 /*
 Any command requiring 'chanop' privileges (such as
            MODE messages) MUST return this error if the client

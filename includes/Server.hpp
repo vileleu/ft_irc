@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 00:08:36 by vico              #+#    #+#             */
-/*   Updated: 2022/06/26 03:43:49 by vico             ###   ########.fr       */
+/*   Updated: 2022/06/27 02:14:44 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ class Server
 	std::vector<Client *>		_list_client;
 	int							_max_client;
 	fd_set						_read_fds;
-
 	int							_select;
 
 	Command						_command;

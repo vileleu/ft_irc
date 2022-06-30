@@ -12,13 +12,20 @@
 
 #include "Command.hpp"
 
-Command::Command() : _host(""), _password(""), _is_init(false), _who(NULL)
+Command::Command() : _nickuse(false), _host(""), _password(""), _who(NULL)
 {
-	// all commands we handle
-	// if command not here send ERR_UNKNOWNCOMMAND
+	// all commands we parse
+	// if command not here, ignore it
 	_check_cmd.push_back("PASS");
 	_check_cmd.push_back("NICK");
 	_check_cmd.push_back("USER");
+	_check_cmd.push_back("MODE");
+	_check_cmd.push_back("JOIN");
+	_check_cmd.push_back("PING");
+	_check_cmd.push_back("OPER");
+	_check_cmd.push_back("PRIVMSG");
+	_check_cmd.push_back("PART");
+	_check_cmd.push_back("NAMES");
 }
 
 Command::~Command()
@@ -29,7 +36,7 @@ Command::~Command()
 ** ↓ PRIVATE ↓
 */
 
-std::vector<std::string>	Command::split(std::string to_split, char c) const
+std::vector<std::string>	Command::split(const std::string &to_split, char c) const
 {
     std::vector<std::string>	arg;
     std::istringstream			in(to_split);
@@ -42,39 +49,15 @@ std::vector<std::string>	Command::split(std::string to_split, char c) const
 	return arg;
 }
 
-/*int							Command::passCommand(std::string cmd)
+int							Command::alreadyUse(std::string nick)
 {
-	std::vector<std::string>	arg(split(cmd, ' '));
-
-	if (arg.size() < 2)
+	for (std::vector<Client *>::iterator it(_clients->begin()); it != _clients->end(); it++)
 	{
-		_to_send.insert(std::make_pair(_who->getSocket(), ERR_NEEDMOREPARAMS(_who->getHost(), _who->getNickname(), arg[0])));
-		return -1;
-	}
-	else if (arg[1] != _password)
-	{
-		_to_send.insert(std::make_pair(_who->getSocket(), ERR_PASSWDMISMATCH(_who->getHost(), _who->getNickname())));
-		return -1;
-	}
-	else if (_who->isRegister() == true)
-	{
-		_to_send.insert(std::make_pair(_who->getSocket(), ERR_ALREADYREGISTRED(_who->getHost(), _who->getNickname())));
-		return -1;		
+		if ((*it)->getNickname() == nick)
+			return -1;
 	}
 	return 0;
 }
-
-int							Command::nickCommand(std::string cmd)
-{
-	std::vector<std::string>	arg(split(cmd, ' '));
-
-	_who->setNickname(arg[1]);
-	_check_send.insert(std::make_pair(_who->getSocket(), ": NICK :" + _who->getNickname() + "\n" + RPL_WELCOME(_who->getHost(), _who->getNickname())));
-}
-
-int							Command::userCommand(std::string cmd)
-{
-}*/
 
 int							Command::registration()
 {
@@ -85,34 +68,38 @@ int							Command::registration()
 		tmp = split(*it, ' ');
 		if (it->find("PASS") == 0)
 		{
+			if (tmp[1] != _password)
+			{
+				_to_send.insert(std::make_pair(_who->getSocket(), ERR_PASSWDMISMATCH(std::string(""), std::string("*"))));
+				return -1;
+			}
 			_who->setPass(tmp[1]);
 		}
-		if (it->find("NICK") == 0)
+		else if (it->find("NICK") == 0)
 		{
-			_who->setNickname(tmp[1]);
+			if (_who->getPass() == "")
+			{
+				_to_send.insert(std::make_pair(_who->getSocket(), ERR_NOTREGISTERED(std::string(""), std::string("*"))));
+				return -1;
+			}
+			if (alreadyUse(tmp[1]))
+				_check_send.insert(std::make_pair(_who->getSocket(), ERR_NICKNAMEINUSE(std::string(""), std::string("*"), tmp[1])));			
+			else
+				_who->setNickname(tmp[1]);
 		}
-		if (it->find("USER") == 0)
+		else if (it->find("USER") == 0)
 		{
 			_who->setUsername(tmp[1]);
-			_who->setHost(_who->getNickname() + "!" + _who->getUsername() + "@" + _host);
 			_who->setRealname(tmp[4]);
+		}
+		if (_who->getNickname() != "" && _who->getUsername() != "")
+		{
+			_who->setHost(_who->getNickname() + "!" + _who->getUsername() + "@" + _host);
 			_who->setRegister(true);
 		}
 	}
 	if (_who->isRegister() == true)
-	{
-		if (_who->getPass() == "")
-		{
-			_to_send.insert(std::make_pair(_who->getSocket(), ERR_NOTREGISTERED(_who->getHost(), _who->getNickname())));
-			return -1;
-		}
-		else if (_who->getPass() != _password)
-		{
-			_to_send.insert(std::make_pair(_who->getSocket(), ERR_PASSWDMISMATCH(_who->getHost(), _who->getNickname())));
-			return -1;
-		}
 		_check_send.insert(std::make_pair(_who->getSocket(), ": NICK :" + _who->getNickname() + "\n" + RPL_WELCOME(_who->getHost(), _who->getNickname())));
-	}
 	return 0;
 }
 
@@ -136,7 +123,6 @@ void						Command::init(std::string to_parse, Client *who)
 		}
 	}
 	_who = who;
-	_is_init = true;
 }
 
 void						Command::parsing()
@@ -150,26 +136,16 @@ void						Command::parsing()
 	}
 	for (std::vector<std::string>::iterator it(_cmd.begin()); it != _cmd.end(); it++)
 	{
-		/*if ((*it).find("PASS") == 0) // PASS
-		{
-			if (passCommand(*it))
-			{
-				return ;
-			}
-		}
-		else if ((*it).find("NICK") == 0) // NICK
+		if ((*it).find("NICK") == 0)
 		{
 			if (nickCommand(*it))
-			{
 				return ;
-			}
 		}
-		else if ((*it).find("USER") == 0) // USER
+		/*
+		else if ((*it).find("NICK") == 0)
 		{
-			if (userCommand(*it))
-			{
+			if (nickCommand(*it))
 				return ;
-			}
 		}
 		else
 		{
@@ -186,13 +162,13 @@ void						Command::clean()
 	_cmd.clear();
 	_to_send.clear();
 	_check_send.clear();
-	_is_init = false;
 }
 
-void						Command::setCommand(std::string password, std::string host)
+void						Command::setCommand(std::string password, std::string host, std::vector<Client *> *clients)
 {
 	_password = password;
 	_host = host;
+	_clients = clients;
 }
 
 std::map<int, std::string>	Command::getTosend() const
