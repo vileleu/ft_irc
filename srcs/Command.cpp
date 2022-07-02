@@ -12,24 +12,25 @@
 
 #include "Command.hpp"
 
-Command::Command() : _nickuse(false), _host(""), _password(""), _who(NULL)
+Command::Command() : _host(""), _password(""), _who(NULL)
 {
 	// all commands we parse
 	// if command not here, ignore it
 	_check_cmd.push_back("PASS");
 	_check_cmd.push_back("NICK");
 	_check_cmd.push_back("USER");
-	_check_cmd.push_back("MODE");
 	_check_cmd.push_back("JOIN");
 	_check_cmd.push_back("PING");
-	_check_cmd.push_back("OPER");
-	_check_cmd.push_back("PRIVMSG");
 	_check_cmd.push_back("PART");
-	_check_cmd.push_back("NAMES");
 }
 
 Command::~Command()
 {
+	for (size_t i(0); i < _channels.size(); i++)
+	{
+		std::cout << "delete channel " << _channels[i]->getName() << std::endl;
+		delete _channels[i];
+	}
 }
 
 /*
@@ -141,19 +142,28 @@ void						Command::parsing()
 			if (nickCommand(*it))
 				return ;
 		}
-		/*
-		else if ((*it).find("NICK") == 0)
+		else if ((*it).find("PING") == 0)
 		{
-			if (nickCommand(*it))
+			if (pongCommand())
 				return ;
 		}
+		else if ((*it).find("JOIN") == 0)
+		{
+			if (joinCommand(*it))
+				return ;
+		}
+		else if ((*it).find("PART") == 0)
+		{
+			if (partCommand(*it))
+				return ;
+		}
+		/*
 		else
 		{
 			_to_send.insert(std::make_pair(_who->getSocket(), ERR_UNKNOWNCOMMAND(_who->getHost(), _who->getNickname(), (*it).substr(0, (*it).find(' ')))));
 			return ;
 		}*/
 	}
-	_to_send = _check_send;
 }
 
 void						Command::clean()

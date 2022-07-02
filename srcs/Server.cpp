@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 03:07:45 by vico              #+#    #+#             */
-/*   Updated: 2022/06/30 01:04:37 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/02 01:51:36 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,35 @@ void			Server::addClient()
 
 void			Server::deleteClient(std::vector<Client *>::iterator it)
 {
+	std::vector<Channel *>::iterator chan(_command._channels.begin());
+	
+	while (chan != _command._channels.end())
+	{
+		for (std::vector<Client *>::iterator client((*chan)->_users.begin()); client != (*chan)->_users.end(); client++)
+		{
+			if ((*it)->getNickname() == (*client)->getNickname())
+			{
+				(*chan)->_users.erase(client);
+				break ;
+			}
+		}
+		for (std::vector<Client *>::iterator op((*chan)->_ops.begin()); op != (*chan)->_ops.end(); op++)
+		{
+			if ((*it)->getNickname() == (*op)->getNickname())
+			{
+				(*chan)->_ops.erase(op);
+				break ;
+			}
+		}
+		if ((*chan)->_users.size() == 0)
+		{
+			delete *chan;
+			_command._channels.erase(chan);
+			chan = _command._channels.begin();
+		}
+		else
+			chan++;
+	}
 	std::cout << "Client disconnected: " << (*it)->getSocket() << "\n" << std::endl;
 	FD_CLR((*it)->getSocket(), &_read_fds);
 	close((*it)->getSocket());
@@ -75,7 +104,7 @@ void			Server::receiveText(const int i)
 	}
 	else
 	{
-		std::cout << "recv to socket " << i << " this message --> \033[1;35m" << std::string(deleteChar(buf, '\r')) << "\033[0m" << std::endl;
+		std::cout << "recv socket " << i << " message --> \033[1;35m" << std::string(deleteChar(buf, '\r')) << "\033[0m" << std::endl;
 		for (std::vector<Client *>::iterator it(_list_client.begin()); it != _list_client.end(); it++)
 		{
 			if ((*it)->getSocket() == i)
@@ -89,9 +118,10 @@ void			Server::receiveText(const int i)
 
 		for (std::map<int, std::string>::iterator it(to_send.begin()); it != to_send.end(); it++)
 		{
-			std::cout << "send to socket " << (*it).first << " this message --> \033[1;35m" << (*it).second << "\033[0m" << std::endl;
+			std::cout << "send socket " << (*it).first << " message --> \033[1;35m" << (*it).second << "\033[0m";
 			send((*it).first, (*it).second.c_str(), (*it).second.size(), 0);
 		}
+		std::cout << std::endl;
 		_command.clean();
 	}
 }

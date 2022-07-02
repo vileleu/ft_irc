@@ -6,13 +6,14 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 03:02:30 by vico              #+#    #+#             */
-/*   Updated: 2022/06/30 00:46:45 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/02 23:51:09 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Command.hpp"
 
-int		Command::pongCommand(std::string cmd)
+int		Command::pongCommand()
 {
-
+	_to_send[_who->getSocket()] += ":" + _who->getHost() + " PONG " + _who->getNickname() + "\n";
+	return 0;
 }

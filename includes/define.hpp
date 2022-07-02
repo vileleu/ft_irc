@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 19:39:18 by vico              #+#    #+#             */
-/*   Updated: 2022/06/30 21:00:58 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/01 02:59:47 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,27 @@
 */
 
 #define RPL_WELCOME(host, nick) ":" + host + " 001 " + nick + " :Bienvenue chakal " + host + "\n"
+
+#define RPL_NOTOPIC(host, nick, channel) ":" + host + " 331 " + nick + " " + channel + " :No topic is set\n"
+
+#define RPL_TOPIC(host, nick, channel, topic) ":" + host + " 332 " + nick + " " + channel + " :" + topic + "\n"
+
+#define RPL_NAMREPLY(host, nick, channel) ":" + host + " 353 " + nick + " = " + channel + " :"
+/*
+"@" is used for secret channels, "*" for private channels, and "=" for others (public channels).
+*/
+#define RPL_ENDOFNAMES(host, nick, channel) ":" + host + " 366 " + nick + " " + channel + " :End of NAMES list\n"
+/*
+To reply to a NAMES message, a reply pair consisting
+of RPL_NAMREPLY and RPL_ENDOFNAMES is sent by the
+server back to the client.  If there is no channel
+found as in the query, then only RPL_ENDOFNAMES is
+returned.  The exception to this is when a NAMES
+message is sent with no parameters and all visible
+channels and contents are sent back in a series of
+RPL_NAMEREPLY messages with a RPL_ENDOFNAMES to mark
+the end.
+*/
 
 /*
 **  ↓ ERRORS REPLIES ↓
