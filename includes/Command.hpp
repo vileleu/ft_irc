@@ -21,31 +21,33 @@ class Command
 {
 	private:
 
+	bool						_block;
 	std::string					_host;
 	std::string					_password;
 	std::vector<std::string>	_check_cmd;
 	std::vector<std::string>	_cmd;
-	std::map<int, std::string>	_check_send;
 	std::map<int, std::string>	_to_send;
 
 	Client						*_who;
 
 	std::vector<Client *>		*_clients;
+	fd_set						*_read_fds;
 
 	std::vector<std::string>	split(const std::string &to_split, char c) const;
 
 	int							alreadyUse(std::string nick);
-	int							registration();
+	void						registration();
 
 	int							nickCheck(const std::string &check);
 
 	int							joinCommand(std::string cmd);    // rejoins un canal de disscussion, le créé si il n'existe pas (le créateur est un opérateur)
 	int							nickCommand(std::string cmd);    // change de nickname
 	int							partCommand(std::string cmd);    // quitte un ou plusieurs canal(canaux)
-	int							pongCommand();                   // réponse à PING
+	void						pongCommand();                   // réponse à PING
 	int							privmsgCommand(std::string cmd); // gère les messages des canaux
 	int							topicCommand(std::string cmd);   // créer un topic pour un channel, il faut être dans le channel
 	int							kickCommand(std::string cmd);
+	void						quitCommand(std::string cmd);    // quitte le serveur et tout les channels rejoints
 
 	public:
 
@@ -59,7 +61,7 @@ class Command
 	void						clean();
 
 	std::map<int, std::string>	getTosend() const;
-	void						setCommand(std::string password, std::string host, std::vector<Client *> *clients);
+	void						setCommand(std::string password, std::string host, std::vector<Client *> *clients, fd_set *read_fds);
 };
 
 #endif

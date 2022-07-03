@@ -12,7 +12,7 @@
 
 #include "Command.hpp"
 
-Command::Command() : _host(""), _password(""), _who(NULL)
+Command::Command() : _block(false), _host(""), _password(""), _who(NULL)
 {
 	// all commands we parse
 	// if command not here, ignore it
@@ -22,6 +22,7 @@ Command::Command() : _host(""), _password(""), _who(NULL)
 	_check_cmd.push_back("JOIN");
 	_check_cmd.push_back("PING");
 	_check_cmd.push_back("PART");
+	_check_cmd.push_back("QUIT");
 }
 
 Command::~Command()
@@ -60,7 +61,7 @@ int							Command::alreadyUse(std::string nick)
 	return 0;
 }
 
-int							Command::registration()
+void						Command::registration()
 {
 	std::vector<std::string>	tmp;
 
@@ -72,19 +73,22 @@ int							Command::registration()
 			if (tmp[1] != _password)
 			{
 				_to_send.insert(std::make_pair(_who->getSocket(), ERR_PASSWDMISMATCH(std::string(""), std::string("*"))));
-				return -1;
+				_block = true;
+				return ;
 			}
 			_who->setPass(tmp[1]);
 		}
 		else if (it->find("NICK") == 0)
 		{
-			if (_who->getPass() == "")
+			if (_block)
+				return ;
+			if (_who->getPass() != _password && _password != "")
 			{
 				_to_send.insert(std::make_pair(_who->getSocket(), ERR_NOTREGISTERED(std::string(""), std::string("*"))));
-				return -1;
+				return ;
 			}
 			if (alreadyUse(tmp[1]))
-				_check_send.insert(std::make_pair(_who->getSocket(), ERR_NICKNAMEINUSE(std::string(""), std::string("*"), tmp[1])));			
+				_to_send.insert(std::make_pair(_who->getSocket(), ERR_NICKNAMEINUSE(std::string(""), std::string("*"), tmp[1])));			
 			else
 				_who->setNickname(tmp[1]);
 		}
@@ -100,8 +104,7 @@ int							Command::registration()
 		}
 	}
 	if (_who->isRegister() == true)
-		_check_send.insert(std::make_pair(_who->getSocket(), ": NICK :" + _who->getNickname() + "\n" + RPL_WELCOME(_who->getHost(), _who->getNickname())));
-	return 0;
+		_to_send.insert(std::make_pair(_who->getSocket(), ": NICK :" + _who->getNickname() + "\n" + RPL_WELCOME(_who->getHost(), _who->getNickname())));
 }
 
 /*
@@ -130,10 +133,7 @@ void						Command::parsing()
 {
 	if (_who->isRegister() == false)
 	{
-		if (registration())
-			return ;
-		_to_send = _check_send;
-		return ;
+		return registration();
 	}
 	for (std::vector<std::string>::iterator it(_cmd.begin()); it != _cmd.end(); it++)
 	{
@@ -143,10 +143,7 @@ void						Command::parsing()
 				return ;
 		}
 		else if ((*it).find("PING") == 0)
-		{
-			if (pongCommand())
-				return ;
-		}
+			pongCommand();
 		else if ((*it).find("JOIN") == 0)
 		{
 			if (joinCommand(*it))
@@ -157,6 +154,8 @@ void						Command::parsing()
 			if (partCommand(*it))
 				return ;
 		}
+		else if ((*it).find("QUIT") == 0)
+			return quitCommand(*it);
 		/*
 		else
 		{
@@ -171,14 +170,14 @@ void						Command::clean()
 	_who = NULL;
 	_cmd.clear();
 	_to_send.clear();
-	_check_send.clear();
 }
 
-void						Command::setCommand(std::string password, std::string host, std::vector<Client *> *clients)
+void						Command::setCommand(std::string password, std::string host, std::vector<Client *> *clients, fd_set *read_fds)
 {
 	_password = password;
 	_host = host;
 	_clients = clients;
+	_read_fds = read_fds;
 }
 
 std::map<int, std::string>	Command::getTosend() const
