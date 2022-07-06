@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 19:39:18 by vico              #+#    #+#             */
-/*   Updated: 2022/07/01 02:59:47 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/06 02:44:50 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 */
 
 #define RPL_WELCOME(host, nick) ":" + host + " 001 " + nick + " :Bienvenue chakal " + host + "\n"
+
+#define RPL_CHANNELMODEIS(host, nick, channel, mode, modeparams) ":" + host + " 324 " + nick + " " + channel + " " + mode + " " + modeparams + "\n"
 
 #define RPL_NOTOPIC(host, nick, channel) ":" + host + " 331 " + nick + " " + channel + " :No topic is set\n"
 

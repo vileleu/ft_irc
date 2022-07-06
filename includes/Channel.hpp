@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/25 03:06:20 by vico              #+#    #+#             */
-/*   Updated: 2022/07/02 22:56:41 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/06 03:42:07 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ class Channel
 
 	std::string				_name;
 	std::string				_topic;
+	std::string				_mode;
+	std::string				_modeparams;
 
 	public:
 
@@ -35,9 +37,14 @@ class Channel
 
 	std::string				getName() const;
 	std::string				getTopic() const;
+	std::string				getMode() const;
+	std::string				getModeparams() const;
 	void					setTopic(const std::string &topic);
 	void					addUser(Client *client, bool op);
 	bool					removeUser(Client *client);
+	bool					isOp(Client *client);
+	void					removeOp(Client *client);
+	void					addMode(char mode, std::string params);
 };
 
 #endif

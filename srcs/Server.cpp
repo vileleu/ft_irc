@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 03:07:45 by vico              #+#    #+#             */
-/*   Updated: 2022/07/03 03:04:07 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/03 21:27:42 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,18 @@ Server::Server() : _port(0), _socket(0), _password(""), _host("localhost"), _loo
 
 Server::~Server()
 {
-	std::cout << "close Server ..." << std::endl;
-	for (size_t i(0); i < _list_client.size(); i++)
+	if (_socket)
 	{
-		std::cout << "delete client " << _list_client[i]->getSocket() << std::endl;
-		FD_CLR(_list_client[i]->getSocket(), &_read_fds);
-		close(_list_client[i]->getSocket());
-		delete _list_client[i];
+		std::cout << "close Server ..." << std::endl;
+		for (size_t i(0); i < _list_client.size(); i++)
+		{
+			std::cout << "delete client " << _list_client[i]->getSocket() << std::endl;
+			FD_CLR(_list_client[i]->getSocket(), &_read_fds);
+			close(_list_client[i]->getSocket());
+			delete _list_client[i];
+		}
+		close(_socket);
 	}
-	close(_socket);
 }
 
 /*

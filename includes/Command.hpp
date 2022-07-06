@@ -21,11 +21,13 @@ class Command
 {
 	private:
 
-	bool						_block;
+	bool						_fail;
 	std::string					_host;
 	std::string					_password;
 	std::vector<std::string>	_check_cmd;
+	std::string					_check_mode;
 	std::vector<std::string>	_cmd;
+
 	std::map<int, std::string>	_to_send;
 
 	Client						*_who;
@@ -35,19 +37,22 @@ class Command
 
 	std::vector<std::string>	split(const std::string &to_split, char c) const;
 
+	void						failedRegister();
 	int							alreadyUse(std::string nick);
 	void						registration();
 
 	int							nickCheck(const std::string &check);
+	int							execmode(char c, char mode, std::vector<std::string>::iterator it, Channel *chan);
 
 	int							joinCommand(std::string cmd);    // rejoins un canal de disscussion, le créé si il n'existe pas (le créateur est un opérateur)
 	int							nickCommand(std::string cmd);    // change de nickname
 	int							partCommand(std::string cmd);    // quitte un ou plusieurs canal(canaux)
 	void						pongCommand();                   // réponse à PING
-	int							privmsgCommand(std::string cmd); // gère les messages des canaux
-	int							topicCommand(std::string cmd);   // créer un topic pour un channel, il faut être dans le channel
-	int							kickCommand(std::string cmd);
+	void						privmsgCommand(std::string cmd); // gère les messages des canaux
 	void						quitCommand(std::string cmd);    // quitte le serveur et tout les channels rejoints
+	int							topicCommand(std::string cmd);   // créer un topic pour un channel, il faut être dans le channel
+	int							kickCommand(std::string cmd);    // exclu un/des user/users d'un/des canal/canaux
+	int							modeCommand(std::string cmd);
 
 	public:
 

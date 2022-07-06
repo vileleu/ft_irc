@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 02:55:25 by vico              #+#    #+#             */
-/*   Updated: 2022/07/02 23:46:59 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/05 22:42:14 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int		Command::partCommand(std::string cmd)
 				{
 					if (*client == _who)
 					{
-						std::string	msg(_who->getNickname());
+						std::string	msg("");
 
 						isin = true;
 						for (size_t i(2); i < arg.size(); i++)

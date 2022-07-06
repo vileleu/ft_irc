@@ -6,13 +6,13 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/25 03:06:08 by vico              #+#    #+#             */
-/*   Updated: 2022/07/02 22:56:33 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/06 03:46:00 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Channel.hpp"
 
-Channel::Channel(const std::string &name, Client *creator) : _name(name), _topic("")
+Channel::Channel(const std::string &name, Client *creator) : _name(name), _topic(""), _mode(""), _modeparams("")
 {
 	if (_name.size() >= 50)
 	{
@@ -29,6 +29,7 @@ Channel::Channel(const std::string &name, Client *creator) : _name(name), _topic
 
 Channel::~Channel()
 {
+	std::cout << "remove channel " << _name << std::endl;
 }
 
 std::string				Channel::pref(std::string name)
@@ -49,6 +50,16 @@ std::string				Channel::getName() const
 std::string				Channel::getTopic() const
 {
 	return _topic;
+}
+
+std::string			Channel::getMode() const
+{
+	return "+" + _mode;
+}
+
+std::string			Channel::getModeparams() const
+{
+	return _modeparams;
 }
 
 void					Channel::setTopic(const std::string &topic)
@@ -84,4 +95,40 @@ bool					Channel::removeUser(Client *client)
 	if (_users.size() == 0)
 		return false;
 	return true;
+}
+
+bool				Channel::isOp(Client *client)
+{
+	for (std::vector<Client *>::iterator op(_ops.begin()); op != _ops.end(); op++)
+	{
+		if ((*op) == client)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+void				Channel::removeOp(Client *client)
+{
+	for (std::vector<Client *>::iterator op(_ops.begin()); op != _ops.end(); op++)
+	{
+		if ((*op) == client)
+		{
+			_ops.erase(op);
+			return ;
+		}
+	}
+}
+
+void				Channel::addMode(char mode, std::string params)
+{
+	_mode.push_back(mode);
+	if (params != "")
+	{
+		if (_modeparams == "")
+			_modeparams = params;
+		else
+			_modeparams += " " + params;
+	}
 }
