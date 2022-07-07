@@ -6,13 +6,13 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 11:49:20 by vico              #+#    #+#             */
-/*   Updated: 2022/07/03 21:29:11 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/07 13:07:31 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
 
-Client::Client() : _socket(0), _infos_client_size(sizeof(_infos_client)), _pass(""), _nickname(""), _username(""), _realname(""), _host("")
+Client::Client() : _socket(0), _infos_client_size(sizeof(_infos_client)), _pass(""), _nickname(""), _username(""), _realname(""), _host(""), _invite(std::make_pair(false, ""))
 {
 	_register = false;
 }
@@ -89,7 +89,10 @@ void				Client::setUsername(const std::string &username)
 
 void				Client::setRealname(const std::string &realname)
 {
-	_realname = realname;
+	if (realname[0] == ':')
+		_realname = realname.substr(1);
+	else
+		_realname = realname;
 }
 
 void				Client::setHost(const std::string &host)

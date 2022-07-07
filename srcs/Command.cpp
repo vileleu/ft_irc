@@ -25,6 +25,7 @@ Command::Command() : _fail(false), _host(""), _password(""), _check_mode("Oovaim
 	_check_cmd.push_back("TOPIC");
 	_check_cmd.push_back("PART");
 	_check_cmd.push_back("KICK");
+	_check_cmd.push_back("INVITE");
 	_check_cmd.push_back("MODE");
 	_check_cmd.push_back("QUIT");
 }
@@ -85,6 +86,12 @@ void						Command::registration()
 
 	for (std::vector<std::string>::iterator it(_cmd.begin()); it != _cmd.end(); it++)
 	{
+		if (it->find("PASS") != 0 && it->find("NICK") != 0 && it->find("USER") != 0)
+		{
+			_to_send.insert(std::make_pair(_who->getSocket(), ERR_NOTREGISTERED(std::string(""), std::string("*"))));
+			_fail = true;
+			return ;
+		}
 		tmp = split(*it, ' ');
 		if (it->find("PASS") == 0 && _password != "")
 		{
@@ -104,6 +111,12 @@ void						Command::registration()
 				_fail = true;
 				return ;
 			}
+			if (tmp.size() < 2 || nickCheck(tmp[1]))
+			{
+				_to_send.insert(std::make_pair(_who->getSocket(), ERR_ERRONEUSNICKNAME(_who->getHost(), _who->getNickname(), tmp[1])));
+				_fail = true;
+				return ;
+			}
 			if (alreadyUse(tmp[1]))
 				_to_send.insert(std::make_pair(_who->getSocket(), ERR_NICKNAMEINUSE(std::string(""), std::string("*"), tmp[1])));			
 			else
@@ -111,6 +124,17 @@ void						Command::registration()
 		}
 		else if (it->find("USER") == 0)
 		{
+			if (_who->getPass() != _password && _password != "")
+			{
+				_to_send.insert(std::make_pair(_who->getSocket(), ERR_NOTREGISTERED(std::string(""), std::string("*"))));
+				_fail = true;
+				return ;
+			}
+			if (tmp.size() < 5)
+			{
+				_to_send.insert(std::make_pair(_who->getSocket(), ERR_NEEDMOREPARAMS(std::string(""), std::string("*"), tmp[0])));
+				return ;
+			}
 			_who->setUsername(tmp[1]);
 			_who->setRealname(tmp[4]);
 		}
@@ -131,6 +155,7 @@ void						Command::registration()
 void						Command::init(std::string to_parse, Client *who)
 {
     std::vector<std::string>	arg(split(to_parse, '\n'));
+	std::string					print("");
 
 	for (std::vector<std::string>::iterator it(arg.begin()); it != arg.end(); it++)
 	{
@@ -144,6 +169,15 @@ void						Command::init(std::string to_parse, Client *who)
 		}
 	}
 	_who = who;
+	for (std::vector<std::string>::iterator it(_cmd.begin()); it != _cmd.end() ; it++)
+	{
+		if (print == "")
+			print = *it + "\n";
+		else
+			print += " " + *it + "\n";
+	}
+	if (print != "")
+		std::cout << "recv socket " << _who->getSocket() << " message --> \033[1;35m" << print << "\033[0m" << std::endl;
 }
 
 void						Command::parsing()
@@ -155,9 +189,15 @@ void						Command::parsing()
 	for (std::vector<std::string>::iterator it(_cmd.begin()); it != _cmd.end(); it++)
 	{
 		if ((*it).find("PING") == 0)
-			pongCommand();
+		{
+			if (pongCommand(*it))
+				return ;
+		}
 		else if ((*it).find("PRIVMSG") == 0)
-			privmsgCommand(*it);
+		{
+			if (privmsgCommand(*it))
+				return ;
+		}
 		else if ((*it).find("NICK") == 0)
 		{
 			if (nickCommand(*it))
@@ -186,6 +226,11 @@ void						Command::parsing()
 		else if ((*it).find("MODE") == 0)
 		{
 			if (modeCommand(*it))
+				return ;
+		}
+		else if ((*it).find("INVITE") == 0)
+		{
+			if (inviteCommand(*it))
 				return ;
 		}
 		else if ((*it).find("QUIT") == 0)

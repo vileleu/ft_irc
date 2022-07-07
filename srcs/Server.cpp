@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 03:07:45 by vico              #+#    #+#             */
-/*   Updated: 2022/07/03 21:27:42 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/07 08:13:04 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ Server::~Server()
 		std::cout << "close Server ..." << std::endl;
 		for (size_t i(0); i < _list_client.size(); i++)
 		{
-			std::cout << "delete client " << _list_client[i]->getSocket() << std::endl;
 			FD_CLR(_list_client[i]->getSocket(), &_read_fds);
 			close(_list_client[i]->getSocket());
 			delete _list_client[i];
@@ -56,9 +55,22 @@ void			Server::receiveText(const int i)
 	memset(buf, 0, 4096);
 	int bytes = recv(i, buf, 4096, 0);
 
-	if (bytes > 0)
+	if (!bytes)
 	{
-		std::cout << "recv socket " << i << " message --> \033[1;35m" << std::string(deleteChar(buf, '\r')) << "\033[0m" << std::endl;
+		for (std::vector<Client *>::iterator it(_list_client.begin()); it != _list_client.end(); it++)
+		{
+			if ((*it)->getSocket() == i)
+			{
+				FD_CLR((*it)->getSocket(), &_read_fds);
+				close((*it)->getSocket());
+				delete *it;
+				_list_client.erase(it);
+				break ;
+			}
+		}
+	}
+	else if (bytes > 0)
+	{
 		for (std::vector<Client *>::iterator it(_list_client.begin()); it != _list_client.end(); it++)
 		{
 			if ((*it)->getSocket() == i)
@@ -74,8 +86,11 @@ void			Server::receiveText(const int i)
 		{
 			std::cout << "send socket " << (*it).first << " message --> \033[1;35m" << (*it).second << "\033[0m";
 			send((*it).first, (*it).second.c_str(), (*it).second.size(), 0);
+			it++;
+			if (it == to_send.end())
+				std::cout << std::endl;
+			it--;
 		}
-		std::cout << std::endl;
 		_command.clean();
 	}
 }

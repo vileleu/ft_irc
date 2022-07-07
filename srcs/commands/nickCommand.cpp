@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 02:55:25 by vico              #+#    #+#             */
-/*   Updated: 2022/07/02 23:34:37 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/07 10:36:39 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,21 @@ int		Command::nickCommand(std::string cmd)
 		}
 	}
 	_who->setNickname(arg[1]);
+	for (std::vector<Channel *>::iterator chan(_channels.begin()); chan != _channels.end(); chan++)
+	{
+		for (std::vector<Client *>::iterator client((*chan)->_users.begin()); client != (*chan)->_users.end(); client++)
+		{
+			if (*client == _who)
+			{
+				for (client = (*chan)->_users.begin(); client != (*chan)->_users.end(); client++)
+				{
+					if (*client != _who)
+						_to_send[(*client)->getSocket()] += ":" + _who->getHost() + " NICK " + _who->getNickname() + "\n";
+				}
+				break ;
+			}
+		}
+	}
 	_to_send[_who->getSocket()] += ":" + _who->getHost() + " NICK " + _who->getNickname() + "\n";
 	_who->setHost(_who->getNickname() + "!" + _who->getUsername() + "@" + _host);
 	return 0;

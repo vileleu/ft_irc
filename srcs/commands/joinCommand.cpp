@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 02:55:25 by vico              #+#    #+#             */
-/*   Updated: 2022/07/02 23:37:07 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/07 13:19:50 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,30 @@ int		Command::joinCommand(std::string cmd)
 			if ((*chan)->getName() == *it) // rejoins le canal
 			{
 				exist = true;
+				if ((*chan)->getInvite() == true)
+				{
+					if (_who->_invite.first == false || _who->_invite.second != (*chan)->getName())
+					{
+						_to_send[_who->getSocket()] += ERR_INVITEONLYCHAN(_who->getHost(), _who->getNickname(), *it);
+						break ;
+					}
+				}
+				if ((*chan)->getKey() != "")
+				{
+					std::vector<std::string>	pass(split(arg[2], ','));
+
+					if (arg.size() < 3 || pass[it - name.begin()] != (*chan)->getKey())
+					{
+						_to_send[_who->getSocket()] += ERR_BADCHANNELKEY(_who->getHost(), _who->getNickname(), *it);
+						break ;
+					}
+				}
+				if ((*chan)->getLimit() && (*chan)->_users.size() >= (*chan)->getLimit())
+				{
+					_to_send[_who->getSocket()] += ERR_CHANNELISFULL(_who->getHost(), _who->getNickname(), *it);
+					break ;
+				}
+				_who->_invite = std::make_pair(false, "");
 				(*chan)->addUser(_who, false);
 				if ((*chan)->getTopic() != "")
 					send.append(RPL_TOPIC(_who->getHost(), _who->getNickname(), (*chan)->getName(), (*chan)->getTopic()));

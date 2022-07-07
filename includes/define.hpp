@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 19:39:18 by vico              #+#    #+#             */
-/*   Updated: 2022/07/06 02:44:50 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/07 13:01:46 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,28 +19,19 @@
 
 #define RPL_WELCOME(host, nick) ":" + host + " 001 " + nick + " :Bienvenue chakal " + host + "\n"
 
+#define RPL_AWAY(host, nick, n, msg) ":" + host + " 301 " + nick + " " + n + " :" + msg + "\n"
+
 #define RPL_CHANNELMODEIS(host, nick, channel, mode, modeparams) ":" + host + " 324 " + nick + " " + channel + " " + mode + " " + modeparams + "\n"
 
 #define RPL_NOTOPIC(host, nick, channel) ":" + host + " 331 " + nick + " " + channel + " :No topic is set\n"
 
 #define RPL_TOPIC(host, nick, channel, topic) ":" + host + " 332 " + nick + " " + channel + " :" + topic + "\n"
 
+#define RPL_INVITING(host, nick, channel, n) ":" + host + " 341 " + nick + " " + channel + " " + n + "\n"
+
 #define RPL_NAMREPLY(host, nick, channel) ":" + host + " 353 " + nick + " = " + channel + " :"
-/*
-"@" is used for secret channels, "*" for private channels, and "=" for others (public channels).
-*/
+
 #define RPL_ENDOFNAMES(host, nick, channel) ":" + host + " 366 " + nick + " " + channel + " :End of NAMES list\n"
-/*
-To reply to a NAMES message, a reply pair consisting
-of RPL_NAMREPLY and RPL_ENDOFNAMES is sent by the
-server back to the client.  If there is no channel
-found as in the query, then only RPL_ENDOFNAMES is
-returned.  The exception to this is when a NAMES
-message is sent with no parameters and all visible
-channels and contents are sent back in a series of
-RPL_NAMEREPLY messages with a RPL_ENDOFNAMES to mark
-the end.
-*/
 
 /*
 **  ↓ ERRORS REPLIES ↓
@@ -112,7 +103,9 @@ PING or PONG message missing the originator parameter.
 
 /*
 411 ERR_NORECIPIENT ":No recipient given (<command>)"
-412 ERR_NOTEXTTOSEND ":No text to send"
+*/
+#define ERR_NOTEXTTOSEND(host, nick) ":" + host + " 412 " + nick + " :No text to send\n"
+/*
 413 ERR_NOTOPLEVEL "<mask> :No toplevel domain specified"
 414 ERR_WILDTOPLEVEL "<mask> :Wildcard in toplevel domain"
 415 ERR_BADMASK "<mask> :Bad Server/host mask"
@@ -192,7 +185,7 @@ Returned by a server to a user trying to change nickname
 Returned by the server to indicate that the target
            user of the command is not on the given channel.
 */
-#define ERR_NOTONCHANNEL(host, nick, channel) ":" + host + " 442 " + nick + " " + channel + " :You're not on that channel\n"
+#define ERR_NOTONCHANNEL(host, nick, channel) ":" + host + " 442 " + nick + " :" + channel + " :You're not on that channel\n"
 /*
 Returned by the server whenever a client tries to
            perform a channel affecting command for which the

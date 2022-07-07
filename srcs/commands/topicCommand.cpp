@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 02:55:25 by vico              #+#    #+#             */
-/*   Updated: 2022/07/04 00:03:05 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/07 09:20:18 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,22 +34,36 @@ int		Command::topicCommand(std::string cmd)
 				if (*client == _who)
 				{
 					isin = true;
-					if (arg.size() > 2)
+					if (arg.size() < 3)
 					{
-						std::string	topic("");
-
-						for (size_t i(2); i < arg.size(); i++)
+						if ((*chan)->getTopic() == "")
 						{
-							if (i == 2)
-								topic = arg[i].substr(1);
-							else
-								topic += " " + arg[i];
+							_to_send[_who->getSocket()] += RPL_NOTOPIC(_who->getHost(), _who->getNickname(), arg[1]);
+							return 0;
 						}
-						for (client = (*chan)->_users.begin(); client != (*chan)->_users.end(); client++)
-						{	
-							_to_send[(*client)->getSocket()] += ":" + _who->getHost() + " " + cmd + "\n";
+						else
+						{
+							_to_send[_who->getSocket()] += RPL_TOPIC(_who->getHost(), _who->getNickname(), arg[1], (*chan)->getTopic());
+							return 0;
 						}
 					}
+					std::string	topic("");
+					
+
+					for (size_t i(2); i < arg.size(); i++)
+					{
+						if (i == 2 && arg[i][0] == ':')
+							topic = arg[i].substr(1);
+						else if (i == 2)
+							topic = arg[i];
+						else
+							topic += " " + arg[i];
+					}
+					for (client = (*chan)->_users.begin(); client != (*chan)->_users.end(); client++)
+					{	
+						_to_send[(*client)->getSocket()] += ":" + _who->getHost() + " TOPIC " + arg[1] + " :" + topic + "\n";
+					}
+					(*chan)->setTopic(topic);
 					break ;
 				}
 			}

@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 02:55:25 by vico              #+#    #+#             */
-/*   Updated: 2022/07/05 22:52:39 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/07 12:33:33 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int		Command::kickCommand(std::string cmd)
 {
 	std::vector<std::string>	arg(split(cmd, ' '));
 
-	if (arg.size() < 4)
+	if (arg.size() < 3)
 	{
 		_to_send[_who->getSocket()] += ERR_NEEDMOREPARAMS(_who->getHost(), _who->getNickname(), arg[0]);
 		return -1;
@@ -56,15 +56,12 @@ int		Command::kickCommand(std::string cmd)
 										std::string	msg(":" + (*client)->getNickname());
 
 										usin = true;
-										if (arg[3] != ":")
+										for (size_t i(3); i < arg.size() && arg[3] != ":"; i++)
 										{
-											for (size_t i(3); i < arg.size(); i++)
-											{
-												if (i == 3)
-													msg = arg[i];
-												else
-													msg += " " + arg[i];
-											}
+											if (i == 3)
+												msg = arg[i];
+											else
+												msg += " " + arg[i];
 										}
 										for (client = (*chan)->_users.begin(); client != (*chan)->_users.end(); client++)
 										{

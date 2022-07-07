@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 11:49:32 by vico              #+#    #+#             */
-/*   Updated: 2022/06/27 02:16:42 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/07 13:08:10 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@ class Client
 	bool				_register;
 
 	public:
+
+	std::pair<bool, std::string>	_invite;
 
 	Client();
 	~Client();

@@ -42,17 +42,18 @@ class Command
 	void						registration();
 
 	int							nickCheck(const std::string &check);
-	int							execmode(char c, char mode, std::vector<std::string>::iterator it, Channel *chan);
+	int							execmode(char c, char mode, std::string it, Channel *chan);
 
 	int							joinCommand(std::string cmd);    // rejoins un canal de disscussion, le créé si il n'existe pas (le créateur est un opérateur)
 	int							nickCommand(std::string cmd);    // change de nickname
 	int							partCommand(std::string cmd);    // quitte un ou plusieurs canal(canaux)
-	void						pongCommand();                   // réponse à PING
-	void						privmsgCommand(std::string cmd); // gère les messages des canaux
+	int							pongCommand(std::string cmd);    // réponse à PING
+	int							privmsgCommand(std::string cmd); // gère les messages des canaux
 	void						quitCommand(std::string cmd);    // quitte le serveur et tout les channels rejoints
 	int							topicCommand(std::string cmd);   // créer un topic pour un channel, il faut être dans le channel
 	int							kickCommand(std::string cmd);    // exclu un/des user/users d'un/des canal/canaux
-	int							modeCommand(std::string cmd);
+	int							modeCommand(std::string cmd);    // gère les canaux (il faut être operateur)
+	int							inviteCommand(std::string cmd);  // invite un user dans un canal
 
 	public:
 

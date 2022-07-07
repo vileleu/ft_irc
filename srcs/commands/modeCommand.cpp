@@ -6,21 +6,26 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 02:55:25 by vico              #+#    #+#             */
-/*   Updated: 2022/07/06 04:03:45 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/07 12:42:48 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Command.hpp"
 
-void		Command::execmode(char c, char mode, std::vector<std::string>::iterator it, Channel *chan)
+int			Command::execmode(char c, char mode, std::string it, Channel *chan)
 {
+	int	ret(1);
+
+	std::cout << "mode = " << mode << ", pref = " << c << ", param = " << it << std::endl;
 	if (mode == 'o') // give/take channel operator privilege
 	{
 		bool	usin(false);
 		
+		if (it == "")
+			it = "*";
 		for (std::vector<Client *>::iterator client(chan->_users.begin()); client != chan->_users.end(); client++)
 		{
-			if ((*client)->getNickname() == *it)
+			if ((*client)->getNickname() == it)
 			{
 				usin = true;
 				if (c == '-')
@@ -28,7 +33,10 @@ void		Command::execmode(char c, char mode, std::vector<std::string>::iterator it
 					if (chan->isOp(*client) == true)
 					{
 						chan->removeOp(*client);
-						_to_send[_who->getSocket()] += ":" + _who->getHost() + " MODE " + (*chan)->getName() + " +o " + *it + "\n";
+						for (client = chan->_users.begin(); client != chan->_users.end(); client++)
+						{
+							_to_send[(*client)->getSocket()] += ":" + _who->getHost() + " MODE " + chan->getName() + " -o " + it + "\n";
+						}
 					}
 				}
 				else
@@ -36,15 +44,93 @@ void		Command::execmode(char c, char mode, std::vector<std::string>::iterator it
 					if (chan->isOp(*client) == false)
 					{
 						chan->_ops.push_back(*client);
-						_to_send[_who->getSocket()] += ":" + _who->getHost() + " MODE " + (*chan)->getName() + " -o " + *it + "\n";
+						for (client = chan->_users.begin(); client != chan->_users.end(); client++)
+						{
+							_to_send[(*client)->getSocket()] += ":" + _who->getHost() + " MODE " + chan->getName() + " +o " + it + "\n";
+						}
 					}
 				}
+				break ;
 			}
 		}
 		if (usin == false)
-			_to_send[_who->getSocket()] += ERR_USERNOTINCHANNEL(_who->getHost(), _who->getNickname(), *it, chan->getName());
+			_to_send[_who->getSocket()] += ERR_USERNOTINCHANNEL(_who->getHost(), _who->getNickname(), it, chan->getName());
 	}
-	it++;
+	else if (mode == 'k') // set/remove the channel key (password)
+	{
+		if (c == '-')
+		{
+			ret = 0;
+			if (chan->getKey() != "")
+			{
+				chan->setKey("");
+				chan->removeMode(mode);
+			}
+		}
+		else
+		{
+			if (it != "")
+			{
+				chan->setKey(it);
+				chan->addMode(mode, it);
+			}
+		}
+	}
+	else if (mode == 'l') // set/remove the user limit to channel
+	{
+		if (c == '-')
+		{
+			ret = 0;
+			if (chan->getLimit())
+			{
+				chan->setLimit(0);
+				chan->removeMode(mode);
+			}
+		}
+		else
+		{
+			if (it != "")
+			{
+				chan->setLimit(std::atoi(it.c_str()));
+				chan->addMode(mode, it);
+			}
+		}
+	}
+	else if (mode == 'i') // toggle the invite-only channel flag
+	{
+		ret = 0;
+		if (c == '-')
+		{
+			if (chan->getInvite() == true)
+			{
+				chan->setInvite(false);
+				chan->removeMode(mode);
+			}
+		}
+		else
+		{
+			chan->setInvite(true);
+			chan->addMode(mode, "");
+		}
+	}
+	else if (mode == 'm') // toggle the moderated channel
+	{
+		ret = 0;
+		if (c == '-')
+		{
+			if (chan->getModerated() == true)
+			{
+				chan->setModerated(false);
+				chan->removeMode(mode);
+			}
+		}
+		else
+		{
+			chan->setModerated(true);
+			chan->addMode(mode, "");
+		}
+	}
+	return ret;
 }
 
 int			Command::modeCommand(std::string cmd)
@@ -77,6 +163,8 @@ int			Command::modeCommand(std::string cmd)
 						_to_send[_who->getSocket()] += RPL_CHANNELMODEIS(_who->getHost(), _who->getNickname(), arg[1], (*chan)->getMode(), (*chan)->getModeparams());
 						return 0;
 					}
+					else if (arg[2] == "b")
+						return 0;
 					for (std::vector<Client *>::iterator op((*chan)->_ops.begin()); op != (*chan)->_ops.end(); op++)
 					{
 						if (*op == _who)
@@ -97,7 +185,13 @@ int			Command::modeCommand(std::string cmd)
 									if (arg[2][i] == _check_mode[j])
 									{
 										ismode = true;
-										execmode(c, arg[2][i], it, *chan);
+										if (it == arg.end())
+											execmode(c, arg[2][i], "", *chan);
+										else
+										{
+											if (execmode(c, arg[2][i], *it, *chan))
+												it++;
+										}
 										break ;
 									}
 								}
