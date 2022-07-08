@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 02:55:25 by vico              #+#    #+#             */
-/*   Updated: 2022/07/07 11:42:57 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/08 12:43:10 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int		Command::privmsgCommand(std::string cmd)
 	if (arg.size() < 2)
 	{
 		_to_send[_who->getSocket()] += ERR_NEEDMOREPARAMS(_who->getHost(), _who->getNickname(), arg[0]);
-		return -1;
+		return 0;
 	}
 	bool	exist(false);
 	bool	isin(false);
@@ -33,7 +33,7 @@ int		Command::privmsgCommand(std::string cmd)
 			if ((*chan)->getModerated() == true && (*chan)->isOp(_who) == false)
 			{
 				_to_send[_who->getSocket()] += ERR_CANNOTSENDTOCHAN(_who->getHost(), _who->getNickname(), arg[1]);
-				return -1;
+				return 0;
 			}
 			for (std::vector<Client *>::iterator client((*chan)->_users.begin()); client != (*chan)->_users.end(); client++)
 			{
@@ -43,7 +43,7 @@ int		Command::privmsgCommand(std::string cmd)
 					if (arg.size() < 3 || (arg.size() < 4 && arg[2] == ":"))
 					{
 						_to_send[_who->getSocket()] += ERR_NOTEXTTOSEND(_who->getHost(), _who->getNickname());
-						return -1;
+						return 0;
 					}
 					for (client = (*chan)->_users.begin(); client != (*chan)->_users.end(); client++)
 					{
@@ -56,14 +56,14 @@ int		Command::privmsgCommand(std::string cmd)
 			if (isin == false)
 			{
 				_to_send[_who->getSocket()] += ERR_NOTONCHANNEL(_who->getHost(), _who->getNickname(), arg[1]);
-				return -1;				
+				return 0;				
 			}
 		}
 	}
 	if (exist == false)
 	{
 		_to_send[_who->getSocket()] += ERR_NOSUCHCHANNEL(_who->getHost(), _who->getNickname(), arg[1]);
-		return -1;
+		return 0;
 	}
 	return 0;
 }

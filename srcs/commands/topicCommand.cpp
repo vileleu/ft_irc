@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 02:55:25 by vico              #+#    #+#             */
-/*   Updated: 2022/07/07 09:20:18 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/08 12:49:31 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int		Command::topicCommand(std::string cmd)
 	if (arg.size() < 2)
 	{
 		_to_send[_who->getSocket()] += ERR_NEEDMOREPARAMS(_who->getHost(), _who->getNickname(), arg[0]);
-		return -1;
+		return 0;
 	}
 	bool						exist(false);
 	bool						isin(false);
@@ -70,7 +70,7 @@ int		Command::topicCommand(std::string cmd)
 			if (isin == false)
 			{
 				_to_send[_who->getSocket()] += ERR_NOTONCHANNEL(_who->getHost(), _who->getNickname(), arg[1]);
-				return -1;
+				return 0;
 			}
 			break ;
 		}
@@ -78,7 +78,7 @@ int		Command::topicCommand(std::string cmd)
 	if (exist == false)
 	{
 		_to_send[_who->getSocket()] += ERR_NOSUCHCHANNEL(_who->getHost(), _who->getNickname(), arg[1]);
-		return -1;
+		return 0;
 	}
 	return 0;
 }

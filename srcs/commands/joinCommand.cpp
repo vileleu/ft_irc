@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 02:55:25 by vico              #+#    #+#             */
-/*   Updated: 2022/07/07 13:19:50 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/08 12:44:14 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int		Command::joinCommand(std::string cmd)
 	if (arg.size() < 2)
 	{
 		_to_send[_who->getSocket()] += ERR_NEEDMOREPARAMS(_who->getHost(), _who->getNickname(), arg[0]);
-		return -1;
+		return 0;
 	}
 	std::vector<std::string>	name(split(arg[1], ','));
 	std::string					send("");

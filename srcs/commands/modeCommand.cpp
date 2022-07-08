@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 02:55:25 by vico              #+#    #+#             */
-/*   Updated: 2022/07/07 12:42:48 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/08 12:51:55 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,7 +140,7 @@ int			Command::modeCommand(std::string cmd)
 	if (arg.size() < 2)
 	{
 		_to_send[_who->getSocket()] += ERR_NEEDMOREPARAMS(_who->getHost(), _who->getNickname(), arg[0]);
-		return -1;
+		return 0;
 	}
 	bool	exist(false);
 	bool	isin(false);
@@ -213,7 +213,7 @@ int			Command::modeCommand(std::string cmd)
 					if (isop == false)
 					{
 						_to_send[_who->getSocket()] += ERR_CHANOPRIVSNEEDED(_who->getHost(), _who->getNickname(), arg[1]);
-						return -1;
+						return 0;
 					}
 					break ;
 				}
@@ -221,7 +221,7 @@ int			Command::modeCommand(std::string cmd)
 			if (isin == false)
 			{
 				_to_send[_who->getSocket()] += ERR_NOTONCHANNEL(_who->getHost(), _who->getNickname(), arg[1]);
-				return -1;
+				return 0;
 			}
 			break;
 		}
@@ -234,7 +234,7 @@ int			Command::modeCommand(std::string cmd)
 				return 0;
 		}
 		_to_send[_who->getSocket()] += ERR_NOSUCHCHANNEL(_who->getHost(), _who->getNickname(), arg[1]);
-		return -1;
+		return 0;
 	}
 	return 0;
 }

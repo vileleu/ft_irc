@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 02:55:25 by vico              #+#    #+#             */
-/*   Updated: 2022/07/07 10:36:39 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/08 13:02:56 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,19 +36,19 @@ int		Command::nickCommand(std::string cmd)
 	if (arg.size() < 2)
 	{
 		_to_send[_who->getSocket()] += ERR_NEEDMOREPARAMS(_who->getHost(), _who->getNickname(), arg[0]);
-		return -1;
+		return 0;
 	}
 	else if (nickCheck(arg[1]))
 	{
 		_to_send[_who->getSocket()] += ERR_ERRONEUSNICKNAME(_who->getHost(), _who->getNickname(), arg[1]);
-		return -1;
+		return 0;
 	}
 	for (std::vector<Client *>::iterator it(_clients->begin()); it != _clients->end(); it++)
 	{
 		if (arg[1] == (*it)->getNickname())
 		{
 			_to_send[_who->getSocket()] += ERR_NICKNAMEINUSE(_who->getHost(), _who->getNickname(), arg[1]);
-			return -1;
+			return 0;
 		}
 	}
 	_who->setNickname(arg[1]);
@@ -68,6 +68,6 @@ int		Command::nickCommand(std::string cmd)
 		}
 	}
 	_to_send[_who->getSocket()] += ":" + _who->getHost() + " NICK " + _who->getNickname() + "\n";
-	_who->setHost(_who->getNickname() + "!" + _who->getUsername() + "@" + _host);
+	_who->setHost(_who->getNickname() + "!" + _who->getUsername() + "@" + _who->getIp());
 	return 0;
 }

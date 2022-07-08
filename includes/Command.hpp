@@ -54,6 +54,7 @@ class Command
 	int							kickCommand(std::string cmd);    // exclu un/des user/users d'un/des canal/canaux
 	int							modeCommand(std::string cmd);    // gère les canaux (il faut être operateur)
 	int							inviteCommand(std::string cmd);  // invite un user dans un canal
+	int							noticeCommand(std::string cmd);  // envoie un message privé à la cible
 
 	public:
 

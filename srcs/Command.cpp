@@ -27,6 +27,7 @@ Command::Command() : _fail(false), _host(""), _password(""), _check_mode("Oovaim
 	_check_cmd.push_back("KICK");
 	_check_cmd.push_back("INVITE");
 	_check_cmd.push_back("MODE");
+	_check_cmd.push_back("NOTICE");
 	_check_cmd.push_back("QUIT");
 }
 
@@ -140,7 +141,7 @@ void						Command::registration()
 		}
 		if (_who->getNickname() != "" && _who->getUsername() != "")
 		{
-			_who->setHost(_who->getNickname() + "!" + _who->getUsername() + "@" + _host);
+			_who->setHost(_who->getNickname() + "!" + _who->getUsername() + "@" + _who->getIp());
 			_who->setRegister(true);
 		}
 	}
@@ -183,9 +184,7 @@ void						Command::init(std::string to_parse, Client *who)
 void						Command::parsing()
 {
 	if (_who->isRegister() == false)
-	{
 		return registration();
-	}
 	for (std::vector<std::string>::iterator it(_cmd.begin()); it != _cmd.end(); it++)
 	{
 		if ((*it).find("PING") == 0)
@@ -231,6 +230,11 @@ void						Command::parsing()
 		else if ((*it).find("INVITE") == 0)
 		{
 			if (inviteCommand(*it))
+				return ;
+		}
+		else if ((*it).find("NOTICE") == 0)
+		{
+			if (noticeCommand(*it))
 				return ;
 		}
 		else if ((*it).find("QUIT") == 0)

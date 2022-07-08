@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 02:55:25 by vico              #+#    #+#             */
-/*   Updated: 2022/07/07 13:08:46 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/08 12:53:08 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int		Command::inviteCommand(std::string cmd)
 	if (arg.size() < 3)
 	{
 		_to_send[_who->getSocket()] += ERR_NEEDMOREPARAMS(_who->getHost(), _who->getNickname(), arg[0]);
-		return -1;
+		return 0;
 	}
 	bool	isclient(false);
 	bool	ischan(false);
@@ -47,13 +47,13 @@ int		Command::inviteCommand(std::string cmd)
 								if ((*cl)->getNickname() == arg[1])
 								{
 									_to_send[_who->getSocket()] += ERR_USERONCHANNEL(_who->getHost(), _who->getNickname(), arg[1], arg[2]);
-									return -1;
+									return 0;
 								}
 							}
 							if ((*chan)->getInvite() == true && (*chan)->isOp(_who) == false)
 							{
 								_to_send[_who->getSocket()] += ERR_CHANOPRIVSNEEDED(_who->getHost(), _who->getNickname(), arg[2]);
-								return -1;
+								return 0;
 							}
 							_to_send[_who->getSocket()] += RPL_INVITING(_who->getHost(), _who->getNickname(), arg[1], arg[2]);
 							_to_send[(*client)->getSocket()] += ":" + _who->getHost() + " INVITE " + arg[1] + " " + arg[2] + "\n";
@@ -65,7 +65,7 @@ int		Command::inviteCommand(std::string cmd)
 					if (isin == false)
 					{
 						_to_send[_who->getSocket()] += ERR_NOTONCHANNEL(_who->getHost(), _who->getNickname(), arg[2]);
-						return -1;
+						return 0;
 					}
 					break ;
 				}
@@ -73,7 +73,7 @@ int		Command::inviteCommand(std::string cmd)
 			if (ischan == false)
 			{
 				_to_send[_who->getSocket()] += ERR_NOSUCHNICK(_who->getHost(), _who->getNickname(), arg[2]);
-				return -1;
+				return 0;
 			}
 			break ;
 		}
@@ -81,7 +81,7 @@ int		Command::inviteCommand(std::string cmd)
 	if (isclient == false)
 	{
 		_to_send[_who->getSocket()] += ERR_NOSUCHNICK(_who->getHost(), _who->getNickname(), arg[1]);
-		return -1;
+		return 0;
 	}
 	return 0;
 }

@@ -6,7 +6,7 @@
 #    By: vico <vico@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/15 18:15:11 by vico              #+#    #+#              #
-#    Updated: 2022/07/07 12:17:38 by vico             ###   ########.fr        #
+#    Updated: 2022/07/08 12:55:50 by vico             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,7 +26,7 @@ INCSDIR		= includes
 SRCS		= $(wildcard srcs/main.cpp srcs/Server.cpp srcs/utils.cpp srcs/Client.cpp srcs/Command.cpp srcs/Channel.cpp \
 				srcs/commands/nickCommand.cpp srcs/commands/pongCommand.cpp srcs/commands/joinCommand.cpp srcs/commands/partCommand.cpp \
 				srcs/commands/quitCommand.cpp srcs/commands/privmsgCommand.cpp srcs/commands/topicCommand.cpp srcs/commands/kickCommand.cpp \
-				srcs/commands/modeCommand.cpp srcs/commands/inviteCommand.cpp)
+				srcs/commands/modeCommand.cpp srcs/commands/inviteCommand.cpp srcs/commands/noticeCommand.cpp)
 OBJS 		= $(patsubst $(SRCSDIR)/%.cpp,$(BINDIR)/%.o,$(SRCS))
 DEPENDS 	= $(OBJS:%.o=%.d)
 INCS		= -I $(INCSDIR)
