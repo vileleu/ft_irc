@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 00:08:36 by vico              #+#    #+#             */
-/*   Updated: 2022/06/27 02:14:44 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/09 19:10:31 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,14 +36,9 @@ class Server
 	Command						_command;
 
 	void			checkFds();
-	std::string		checkPass(std::vector<Client *>::iterator to_fill);
 	void			addClient();
-	void			deleteClient(std::vector<Client *>::iterator it);
-	int				fillClient(std::vector<Client *>::iterator to_fill, std::string text);
-	void			registration(std::vector<int>::iterator it, std::string text);
 	void			receiveText(const int i);
 
-	void			errorSend();
 	int				errorServer(std::string msg);
 
 	public:
