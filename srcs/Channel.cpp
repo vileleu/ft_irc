@@ -6,13 +6,13 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/25 03:06:08 by vico              #+#    #+#             */
-/*   Updated: 2022/07/07 09:57:55 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/09 14:41:14 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Channel.hpp"
 
-Channel::Channel(const std::string &name, Client *creator) : _name(name), _topic(""), _mode(""), _key(""), _moderated(false), _invite(false), _limit(0)
+Channel::Channel(const std::string &name, Client *creator) : _name(name), _topic(""), _mode(""), _key(""), _moderated(false), _invite(false), _tops(false), _limit(0)
 {
 	if (_name[0] != '&' && _name[0] != '#' && _name[0] != '+' && _name[0] != '!')
 		_name = '#' + _name;
@@ -64,6 +64,11 @@ bool				Channel::getInvite() const
 	return _invite;
 }
 
+bool				Channel::getTops() const
+{
+	return _tops;
+}
+
 unsigned int		Channel::getLimit() const
 {
 	return _limit;	
@@ -106,6 +111,11 @@ void				Channel::setModerated(const bool &mode)
 void				Channel::setInvite(const bool &invite)
 {
 	_invite = invite;
+}
+
+void				Channel::setTops(const bool &tops)
+{
+	_tops = tops;
 }
 
 void				Channel::setLimit(const unsigned int &limit)

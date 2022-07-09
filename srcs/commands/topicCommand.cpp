@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 02:55:25 by vico              #+#    #+#             */
-/*   Updated: 2022/07/08 12:49:31 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/09 14:42:16 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,11 @@ int		Command::topicCommand(std::string cmd)
 				if (*client == _who)
 				{
 					isin = true;
+					if ((*chan)->getTops() == true && (*chan)->isOp(_who) == false)
+					{
+						_to_send[_who->getSocket()] += ERR_CHANOPRIVSNEEDED(_who->getHost(), _who->getNickname(), arg[1]);
+						return 0;
+					}
 					if (arg.size() < 3)
 					{
 						if ((*chan)->getTopic() == "")

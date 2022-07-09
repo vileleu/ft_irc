@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/25 03:06:20 by vico              #+#    #+#             */
-/*   Updated: 2022/07/07 06:52:17 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/09 14:40:22 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ class Channel
 	std::string					_key;
 	bool						_moderated;
 	bool						_invite;
+	bool						_tops;
 	unsigned int				_limit;
 
 	public:
@@ -43,6 +44,7 @@ class Channel
 	std::string				getKey() const;
 	bool					getModerated() const;
 	bool					getInvite() const;
+	bool					getTops() const;
 	unsigned int			getLimit() const;
 	std::string				getTopic() const;
 	std::string				getMode() const;
@@ -51,6 +53,7 @@ class Channel
 	void					setKey(const std::string &key);
 	void					setModerated(const bool &mode);
 	void					setInvite(const bool &mode);
+	void					setTops(const bool &tops);
 	void					setLimit(const unsigned int &limit);
 	void					setTopic(const std::string &topic);
 

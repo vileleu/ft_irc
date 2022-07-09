@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 02:55:25 by vico              #+#    #+#             */
-/*   Updated: 2022/07/08 12:51:55 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/09 14:44:54 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,6 +130,23 @@ int			Command::execmode(char c, char mode, std::string it, Channel *chan)
 			chan->addMode(mode, "");
 		}
 	}
+	else if (mode == 't') // toggle the topic settable by channel operator only flag
+	{
+		ret = 0;
+		if (c == '-')
+		{
+			if (chan->getTops() == true)
+			{
+				chan->setTops(false);
+				chan->removeMode(mode);
+			}
+		}
+		else
+		{
+			chan->setTops(true);
+			chan->addMode(mode, "");
+		}
+	}	
 	return ret;
 }
 
