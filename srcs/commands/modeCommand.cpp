@@ -6,11 +6,97 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 02:55:25 by vico              #+#    #+#             */
-/*   Updated: 2022/07/09 14:44:54 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/09 18:37:38 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Command.hpp"
+
+std::string	Command::verifmask(const std::string &mask) const
+{
+	std::string	ret(mask);
+
+	if (ret.find('!') != std::string::npos && ret.find('@') != std::string::npos)
+	{
+		bool	isfirst(false);
+		bool	issecond(false);
+		size_t	i(0);
+
+		while (i < ret.size())
+		{
+			if (ret[i] == '!' && isfirst)
+				ret.erase(i, 1);
+			else if (ret[i] == '!' && !isfirst)
+			{
+				isfirst = true;
+				i++;
+			}
+			else if (ret[i] == '@' && !isfirst)
+				ret.erase(i, 1);
+			else if (ret[i] == '@' && issecond)
+				ret.erase(i, 1);
+			else if (ret[i] == '@' && isfirst && !issecond)
+			{
+				issecond = true;
+				i++;
+			}
+			else
+				i++;
+		}
+		if (ret.find('!') == (ret.find('@') - 1))
+			ret.insert(ret.find('@'), 1, '*');
+		if (ret.find('!') == 0)
+			ret.insert(0, 1, '*');
+		if (ret.find('@') == (ret.size() - 1))
+			ret.insert(ret.size(), 1, '*');
+		if (ret.find('@') == std::string::npos)
+		{
+			if (ret.find('!') == (ret.size() - 1))
+				ret.append("*@*");
+			else
+				ret.append("@*");
+		}
+		return ret;
+	}
+	else if (ret.find('!') != std::string::npos && ret.find('@') == std::string::npos)
+	{
+		bool	isfirst(false);
+		size_t	i(0);
+
+		while (i < ret.size())
+		{
+			if (ret[i] == '!' && isfirst)
+				ret.erase(i, 1);
+			else if (ret[i] == '!' && !isfirst)
+			{
+				isfirst = true;
+				i++;
+			}
+			else
+				i++;
+		}
+		if (ret.find('!') == (ret.size() - 1))
+			ret.insert(ret.size(), 1, '*');
+		if (ret.find('!') == 0)
+			ret.insert(0, 1, '*');
+		return ret + "@*";
+	}
+	else if (ret.find('!') == std::string::npos && ret.find('@') != std::string::npos)
+	{
+		size_t	i(0);
+
+		while (i < ret.size())
+		{
+			if (ret[i] == '@')
+				ret.erase(i, 1);
+			else
+				i++;
+		}
+		if (!ret.size())
+			ret = "*";
+	}
+	return ret + "!*@*";
+}
 
 int			Command::execmode(char c, char mode, std::string it, Channel *chan)
 {
@@ -146,7 +232,43 @@ int			Command::execmode(char c, char mode, std::string it, Channel *chan)
 			chan->setTops(true);
 			chan->addMode(mode, "");
 		}
-	}	
+	}
+	else if (mode == 'b') // set/remove ban mask to keep users out
+	{
+		if (c == '-')
+		{
+			for (std::vector<std::string>::iterator mask(chan->_banmask.begin()); mask != chan->_banmask.end(); mask++)
+			{
+				if (*mask == it)
+				{
+					chan->_banmask.erase(mask);
+					for (std::vector<Client *>::iterator client(chan->_users.begin()); client != chan->_users.end(); client++)
+					{
+						_to_send[(*client)->getSocket()] += ":" + _who->getHost() + " MODE " + chan->getName() + " -b " + it + "\n";
+					}
+					break ;
+				}
+			}
+		}
+		else
+		{
+			if (it != "")
+			{
+				bool	isin(false);
+				for (std::vector<std::string>::iterator mask(chan->_banmask.begin()); mask != chan->_banmask.end(); mask++)
+				{
+					if (*mask == it)
+						isin = true;
+				}
+				if (!isin)
+					chan->_banmask.push_back(verifmask(it));
+				for (std::vector<Client *>::iterator client(chan->_users.begin()); client != chan->_users.end(); client++)
+				{
+					_to_send[(*client)->getSocket()] += ":" + _who->getHost() + " MODE " + chan->getName() + " +b " + it + "\n";
+				}
+			}
+		}
+	}
 	return ret;
 }
 
@@ -180,8 +302,15 @@ int			Command::modeCommand(std::string cmd)
 						_to_send[_who->getSocket()] += RPL_CHANNELMODEIS(_who->getHost(), _who->getNickname(), arg[1], (*chan)->getMode(), (*chan)->getModeparams());
 						return 0;
 					}
-					else if (arg[2] == "b")
+					if ((arg[2] == "b" || arg[2] == "+b") && arg.size() == 3)
+					{
+						for (std::vector<std::string>::iterator mask((*chan)->_banmask.begin()); mask != (*chan)->_banmask.end(); mask++)
+						{
+							_to_send[_who->getSocket()] += RPL_BANLIST(_who->getHost(), _who->getNickname(), (*chan)->getName(), *mask);
+						}
+						_to_send[_who->getSocket()] += RPL_ENDOFBANLIST(_who->getHost(), _who->getNickname(), (*chan)->getName());
 						return 0;
+					}
 					for (std::vector<Client *>::iterator op((*chan)->_ops.begin()); op != (*chan)->_ops.end(); op++)
 					{
 						if (*op == _who)

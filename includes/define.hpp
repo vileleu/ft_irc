@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 19:39:18 by vico              #+#    #+#             */
-/*   Updated: 2022/07/09 14:57:48 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/09 18:58:19 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,10 @@
 
 #define RPL_ENDOFNAMES(host, nick, channel) ":" + host + " 366 " + nick + " " + channel + " :End of NAMES list\n"
 
+#define RPL_BANLIST(host, nick, channel, mask) ":" + host + " 367 " + nick + " " + channel + " " + mask + "\n"
+
+#define RPL_ENDOFBANLIST(host, nick, channel) ":" + host + " 368 " + nick + " " + channel + " :End of channel ban list\n"
+
 /*
 **  ↓ ERRORS REPLIES ↓
 */
@@ -47,13 +51,13 @@
 
 #define ERR_NOTEXTTOSEND(host, nick) ":" + host + " 412 " + nick + " :No text to send\n"
 
-#define ERR_ERRONEUSNICKNAME(host, nick, n) ":" + host + " 432 " + nick + " :" + n + " :Erroneous nickname\n"
+#define ERR_ERRONEUSNICKNAME(host, nick, n) ":" + host + " 432 " + nick + " " + n + " :Erroneous nickname\n"
 
 #define ERR_NICKNAMEINUSE(host, nick, n) ":" + host + " 433 " + nick + " " + n + " :Nickname is already in use\n"
 
-#define ERR_USERNOTINCHANNEL(host, nick, n, channel) ":" + host + " 441 " + nick + " " + n + " " + channel + " :They aren't on that channel\n"
+#define ERR_USERNOTINCHANNEL(host, nick, n, channel) ":" + host + " 441 " + nick + " :" + n + " " + channel + " :They aren't on that channel\n"
 
-#define ERR_NOTONCHANNEL(host, nick, channel) ":" + host + " 442 " + nick + " :" + channel + " :You're not on that channel\n"
+#define ERR_NOTONCHANNEL(host, nick, channel) ":" + host + " 442 " + nick + " " + channel + " :You're not on that channel\n"
 
 #define ERR_USERONCHANNEL(host, nick, user, channel) ":" + host + " 443 " + nick + " " + user + " " + channel + " :is already on channel\n"
 
@@ -73,6 +77,6 @@
 
 #define ERR_BADCHANNELKEY(host, nick, channel) ":" + host + " 475 " + nick + " " + channel + " :Cannot join channel (+k)\n"
 
-#define ERR_CHANOPRIVSNEEDED(host, nick, channel) ":" + host + " 482 " + nick + " :" + channel + " :You're not channel operator\n"
+#define ERR_CHANOPRIVSNEEDED(host, nick, channel) ":" + host + " 482 " + nick + " " + channel + " :You're not channel operator\n"
 
 #endif

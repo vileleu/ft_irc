@@ -6,11 +6,31 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 02:55:25 by vico              #+#    #+#             */
-/*   Updated: 2022/07/08 12:44:14 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/09 18:55:01 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Command.hpp"
+
+bool	Command::isBan(Client *client, Channel *chan) const
+{
+	for (std::vector<std::string>::iterator mask(chan->_banmask.begin()); mask != chan->_banmask.end(); mask++)
+	{
+		std::string	nick(mask->substr(0, mask->find('!')));
+
+		if (nick == client->getNickname())
+			return true;
+		std::string	user(mask->substr(mask->find('!') + 1, (mask->find('@') - mask->find('!') - 1)));
+
+		if (user == client->getUsername())
+			return true;
+		std::string	ip(mask->substr(mask->find('@') + 1, (mask->size() - mask->find('!') - 1)));
+
+		if (ip == client->getIp())
+			return true;
+	}
+	return false;
+}
 
 int		Command::joinCommand(std::string cmd)
 {
@@ -34,6 +54,11 @@ int		Command::joinCommand(std::string cmd)
 			if ((*chan)->getName() == *it) // rejoins le canal
 			{
 				exist = true;
+				if (isBan(_who, *chan))
+				{
+					_to_send[_who->getSocket()] += ERR_BANNEDFROMCHAN(_who->getHost(), _who->getNickname(), *it);
+					break ;
+				}
 				if ((*chan)->getInvite() == true)
 				{
 					if (_who->_invite.first == false || _who->_invite.second != (*chan)->getName())

@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/25 03:06:20 by vico              #+#    #+#             */
-/*   Updated: 2022/07/09 14:40:22 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/09 16:02:36 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,9 @@ class Channel
 
 	public:
 
-	std::vector<Client *>	_users;
-	std::vector<Client *>	_ops;
+	std::vector<Client *>		_users;
+	std::vector<Client *>		_ops;
+	std::vector<std::string>	_banmask;
 
 	Channel(const std::string &name, Client *creator);
 	~Channel();

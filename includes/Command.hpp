@@ -43,6 +43,8 @@ class Command
 
 	int							nickCheck(const std::string &check);
 	int							execmode(char c, char mode, std::string it, Channel *chan);
+	std::string					verifmask(const std::string &mask) const;
+	bool						isBan(Client *client, Channel *chan) const;
 
 	int							joinCommand(std::string cmd);    // rejoins un canal de disscussion, le créé si il n'existe pas (le créateur est un opérateur)
 	int							nickCommand(std::string cmd);    // change de nickname
