@@ -43,6 +43,10 @@ int		Command::nickCommand(std::string cmd)
 		_to_send[_who->getSocket()] += ERR_ERRONEUSNICKNAME(_who->getHost(), _who->getNickname(), arg[1]);
 		return 0;
 	}
+	for (size_t i(0); i < arg[1].size(); i ++)
+	{
+		arg[1][i] = std::tolower(arg[1][i]);
+	}
 	for (std::vector<Client *>::iterator it(_clients->begin()); it != _clients->end(); it++)
 	{
 		if (arg[1] == (*it)->getNickname())

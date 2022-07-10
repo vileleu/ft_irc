@@ -118,6 +118,10 @@ void						Command::registration()
 				_fail = true;
 				return ;
 			}
+			for (size_t i(0); i < tmp[1].size(); i ++)
+			{
+				tmp[1][i] = std::tolower(tmp[1][i]);
+			}
 			if (alreadyUse(tmp[1]))
 				_to_send.insert(std::make_pair(_who->getSocket(), ERR_NICKNAMEINUSE(std::string(""), std::string("*"), tmp[1])));			
 			else

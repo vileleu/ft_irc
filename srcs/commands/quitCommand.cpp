@@ -38,6 +38,8 @@ void	Command::quitCommand(std::string cmd)
 				(*chan)->_users.erase(client);
 				break ;
 			}
+			if (client == (*chan)->_users.end())
+				break ;
 		}
 		if ((*chan)->_users.size() == 0)
 		{
