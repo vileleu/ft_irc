@@ -21,7 +21,6 @@ class Command
 {
 	private:
 
-	bool						_fail;
 	std::string					_host;
 	std::string					_password;
 	std::vector<std::string>	_check_cmd;
@@ -37,7 +36,6 @@ class Command
 
 	std::vector<std::string>	split(const std::string &to_split, char c) const;
 
-	void						failedRegister();
 	int							alreadyUse(std::string nick);
 	void						registration();
 

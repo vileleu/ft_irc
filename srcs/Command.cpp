@@ -12,7 +12,7 @@
 
 #include "Command.hpp"
 
-Command::Command() : _fail(false), _host(""), _password(""), _check_mode("OovaimnqpsrtklbeI"), _who(NULL)
+Command::Command() : _host(""), _password(""), _check_mode("OovaimnqpsrtklbeI"), _who(NULL)
 {
 	// all commands we parse
 	// if command not here, ignore it
@@ -66,21 +66,6 @@ int							Command::alreadyUse(std::string nick)
 	return 0;
 }
 
-void						Command::failedRegister()
-{
-	for (std::vector<Client *>::iterator client(_clients->begin()); client != _clients->end(); client++)
-	{
-		if (*client == _who)
-		{
-			FD_CLR(_who->getSocket(), _read_fds);
-			close(_who->getSocket());
-			delete *client;
-			_clients->erase(client);
-			break ;
-		}
-	}
-}
-
 void						Command::registration()
 {
 	std::vector<std::string>	tmp;
@@ -90,7 +75,6 @@ void						Command::registration()
 		if (it->find("PASS") != 0 && it->find("NICK") != 0 && it->find("USER") != 0)
 		{
 			_to_send.insert(std::make_pair(_who->getSocket(), ERR_NOTREGISTERED(std::string(""), std::string("*"))));
-			_fail = true;
 			return ;
 		}
 		tmp = split(*it, ' ');
@@ -99,7 +83,6 @@ void						Command::registration()
 			if (tmp[1] != _password)
 			{
 				_to_send.insert(std::make_pair(_who->getSocket(), ERR_PASSWDMISMATCH(std::string(""), std::string("*"))));
-				_fail = true;
 				return ;
 			}
 			_who->setPass(tmp[1]);
@@ -109,13 +92,11 @@ void						Command::registration()
 			if (_who->getPass() != _password && _password != "")
 			{
 				_to_send.insert(std::make_pair(_who->getSocket(), ERR_NOTREGISTERED(std::string(""), std::string("*"))));
-				_fail = true;
 				return ;
 			}
 			if (tmp.size() < 2 || nickCheck(tmp[1]))
 			{
 				_to_send.insert(std::make_pair(_who->getSocket(), ERR_ERRONEUSNICKNAME(_who->getHost(), _who->getNickname(), tmp[1])));
-				_fail = true;
 				return ;
 			}
 			for (size_t i(0); i < tmp[1].size(); i ++)
@@ -132,7 +113,6 @@ void						Command::registration()
 			if (_who->getPass() != _password && _password != "")
 			{
 				_to_send.insert(std::make_pair(_who->getSocket(), ERR_NOTREGISTERED(std::string(""), std::string("*"))));
-				_fail = true;
 				return ;
 			}
 			if (tmp.size() < 5)
@@ -248,11 +228,6 @@ void						Command::parsing()
 
 void						Command::clean()
 {
-	if (_fail == true)
-	{
-		failedRegister();
-		_fail = false;
-	}
 	_who = NULL;
 	_cmd.clear();
 	_to_send.clear();

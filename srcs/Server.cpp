@@ -61,6 +61,7 @@ void			Server::receiveText(const int i)
 		{
 			if ((*it)->getSocket() == i)
 			{
+				std::cout << "client " << (*it)->getSocket() << " disconnected" << std::endl;
 				FD_CLR((*it)->getSocket(), &_read_fds);
 				close((*it)->getSocket());
 				delete *it;

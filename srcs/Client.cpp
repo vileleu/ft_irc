@@ -19,7 +19,6 @@ Client::Client() : _socket(0), _infos_client_size(sizeof(_infos_client)), _pass(
 
 Client::~Client()
 {
-	std::cout << "client " << _socket << " disconnected" << std::endl;
 }
 
 int					Client::getSocket(void) const

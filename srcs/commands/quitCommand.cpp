@@ -50,15 +50,4 @@ void	Command::quitCommand(std::string cmd)
 		else
 			chan++;
 	}
-	FD_CLR(_who->getSocket(), _read_fds);
-	close(_who->getSocket());
-	for (std::vector<Client *>::iterator client(_clients->begin()); client != _clients->end(); client++)
-	{
-		if (*client == _who)
-		{
-			delete *client;
-			_clients->erase(client);
-			break ;
-		}
-	}
 }
