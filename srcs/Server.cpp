@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 03:07:45 by vico              #+#    #+#             */
-/*   Updated: 2022/07/07 08:13:04 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/15 08:40:47 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,42 @@ void			Server::receiveText(const int i)
 		{
 			if ((*it)->getSocket() == i)
 			{
-				std::cout << "client " << (*it)->getSocket() << " disconnected" << std::endl;
+				std::vector<Channel *>::iterator chan(_command._channels.begin());
+	
+				while (chan != _command._channels.end())
+				{
+					for (std::vector<Client *>::iterator client((*chan)->_users.begin()); client != (*chan)->_users.end(); client++)
+					{
+						if (*it == *client)
+						{
+							for (std::vector<Client *>::iterator cl((*chan)->_users.begin()); cl != (*chan)->_users.end(); cl++)
+							{
+								if (*cl != *it)
+									_command.addTosend((*cl)->getSocket(), ":" + (*it)->getHost() + " :leaving" + "\n");
+							}
+							for (std::vector<Client *>::iterator op((*chan)->_ops.begin()); op != (*chan)->_ops.end(); op++)
+							{
+								if (*it == *op)
+								{
+									(*chan)->_ops.erase(op);
+									break ;
+								}
+							}
+							(*chan)->_users.erase(client);
+							break ;
+						}
+						if (client == (*chan)->_users.end())
+							break ;
+					}
+					if ((*chan)->_users.size() == 0)
+					{
+						delete *chan;
+						_command._channels.erase(chan);
+						chan = _command._channels.begin();
+					}
+					else
+						chan++;
+				}
 				FD_CLR((*it)->getSocket(), &_read_fds);
 				close((*it)->getSocket());
 				delete *it;

@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 11:49:20 by vico              #+#    #+#             */
-/*   Updated: 2022/07/07 13:07:31 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/15 08:24:11 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ Client::Client() : _socket(0), _infos_client_size(sizeof(_infos_client)), _pass(
 
 Client::~Client()
 {
+	std::cout << "client " << _socket << " disconnected" << std::endl;
 }
 
 int					Client::getSocket(void) const

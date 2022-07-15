@@ -6,7 +6,7 @@
 /*   By: vico <vico@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 02:55:25 by vico              #+#    #+#             */
-/*   Updated: 2022/07/09 18:55:01 by vico             ###   ########.fr       */
+/*   Updated: 2022/07/15 08:51:10 by vico             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,8 @@ int		Command::joinCommand(std::string cmd)
 	{
 		send = "";
 		exist = false;
+		if ((*it)[0] != '&' && (*it)[0] != '#' && (*it)[0] != '+' && (*it)[0] != '!')
+			it->insert(0, "#");
 		for (std::vector<Channel *>::iterator chan(_channels.begin()); chan != _channels.end(); chan++)
 		{
 			if ((*chan)->getName() == *it) // rejoins le canal

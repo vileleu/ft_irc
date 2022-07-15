@@ -241,6 +241,11 @@ void						Command::setCommand(std::string password, std::string host, std::vecto
 	_read_fds = read_fds;
 }
 
+void						Command::addTosend(int sock, std::string cmd)
+{
+	_to_send[sock] += cmd;
+}
+
 std::map<int, std::string>	Command::getTosend() const
 {
 	return _to_send;

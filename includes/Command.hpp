@@ -67,6 +67,7 @@ class Command
 	void						parsing();
 	void						clean();
 
+	void						addTosend(int sock, std::string cmd);
 	std::map<int, std::string>	getTosend() const;
 	void						setCommand(std::string password, std::string host, std::vector<Client *> *clients, fd_set *read_fds);
 };
